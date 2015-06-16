@@ -1,8 +1,8 @@
 package ch.wisv.chue;
 
-import ch.wisv.chue.events.IHueEvent;
+import ch.wisv.chue.events.HueEvent;
 import ch.wisv.chue.states.BlankState;
-import ch.wisv.chue.states.IHueState;
+import ch.wisv.chue.states.HueState;
 import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHHueSDK;
 import com.philips.lighting.hue.sdk.PHMessageType;
@@ -126,7 +126,7 @@ public class HueService {
         }
     }
 
-    public void loadState(IHueState state, String... lightIdentifiers) {
+    public void loadState(HueState state, String... lightIdentifiers) {
         String[] ids = getLightIdentifiers(lightIdentifiers);
         restoreState = () -> {
             new BlankState().execute(this.bridge, ids);
@@ -139,7 +139,7 @@ public class HueService {
         state.execute(this.bridge, ids);
     }
 
-    public void loadEvent(IHueEvent event, int duration, String... lightIdentifiers) {
+    public void loadEvent(HueEvent event, int duration, String... lightIdentifiers) {
         String[] ids = getLightIdentifiers(lightIdentifiers);
         event.execute(this.bridge, ids);
 
@@ -163,11 +163,13 @@ public class HueService {
      *
      * @param millis           duration
      * @param lightIdentifiers which ligts
-     * @see <a href="http://www.lmeijer.nl/archives/225-Do-hue-want-a-strobe-up-there.html">Strobe with Hue by Leon Meijer</a>
+     * @see <a href="http://www.lmeijer.nl/archives/225-Do-hue-want-a-strobe-up-there.html">Strobe with Hue by Leon
+     * Meijer</a>
      */
     public void strobe(int millis, String... lightIdentifiers) {
         PHHueHttpConnection connection = new PHHueHttpConnection();
-        final String httpAddress = ((PHLocalBridgeDelegator) ((PHBridgeImpl) bridge).getBridgeDelegator()).buildHttpAddress().toString();
+        final String httpAddress = ((PHLocalBridgeDelegator) ((PHBridgeImpl) bridge).getBridgeDelegator())
+                .buildHttpAddress().toString();
 
         // Put a light definition aka `symbol` at bulb, using internal API call
         for (String light : lightIdentifiers) {
@@ -180,7 +182,7 @@ public class HueService {
         boolean allLightsTurnedOn = bridge.getResourceCache().getAllLights().stream()
                 .allMatch(light -> light.getLastKnownLightState().isOn());
 
-        if(allLightsTurnedOn) {
+        if (allLightsTurnedOn) {
             // Activate symbol
             // Kinda magic symbolselection. It is something like this:
             // for 01..05 step 01, [0i0x]+ where i is `symbol` and x is light bulb

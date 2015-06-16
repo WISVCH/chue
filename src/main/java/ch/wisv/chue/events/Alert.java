@@ -5,16 +5,11 @@ import com.philips.lighting.model.PHLight;
 import com.philips.lighting.model.PHLightState;
 
 /**
- * @author Sander Ploegsma
+ * Alert event
  */
-public class Alert implements IHueEvent {
-
-    public Alert() {
-
-    }
+public class Alert implements HueEvent {
 
     public void execute(PHBridge bridge, String... lightIdentifiers) {
-
         for (String id : lightIdentifiers) {
             PHLightState lightState = new PHLightState();
             lightState.setTransitionTime(0);
