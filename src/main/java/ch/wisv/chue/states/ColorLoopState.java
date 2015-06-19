@@ -5,9 +5,9 @@ import com.philips.lighting.model.PHLight;
 import com.philips.lighting.model.PHLightState;
 
 /**
- * @author Sander Ploegsma
+ * Color loop state
  */
-public class ColorLoopState implements IHueState {
+public class ColorLoopState implements HueState {
     @Override
     public void execute(PHBridge bridge, String... lightIdentifiers) {
         for (String lightId : lightIdentifiers) {

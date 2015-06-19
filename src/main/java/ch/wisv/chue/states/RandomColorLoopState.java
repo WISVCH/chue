@@ -8,9 +8,9 @@ import com.philips.lighting.model.PHLightState;
 import java.util.Random;
 
 /**
- * @author Sander Ploegsma
+ * Random color loop state
  */
-public class RandomColorLoopState implements IHueState {
+public class RandomColorLoopState implements HueState {
     @Override
     public void execute(PHBridge bridge, String... lightIdentifiers) {
         Random rand = new Random();

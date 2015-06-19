@@ -6,9 +6,9 @@ import com.philips.lighting.model.PHLightState;
 import javafx.scene.paint.Color;
 
 /**
- * @author Sander Ploegsma
+ * Color state
  */
-public class ColorState implements IHueState {
+public class ColorState implements HueState {
 
     private Color color;
 

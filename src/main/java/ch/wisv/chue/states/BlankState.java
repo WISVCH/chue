@@ -5,9 +5,9 @@ import com.philips.lighting.model.PHLight;
 import com.philips.lighting.model.PHLightState;
 
 /**
- * @author Sander Ploegsma
+ * Blank state
  */
-public class BlankState implements IHueState {
+public class BlankState implements HueState {
 
     @Override
     public void execute(PHBridge bridge, String... lightIdentifiers) {
