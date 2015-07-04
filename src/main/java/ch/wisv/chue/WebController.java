@@ -44,7 +44,8 @@ public class WebController {
 
     @RequestMapping("/strobe")
     @ResponseBody
-    String strobe(@RequestParam(value = "id[]") String[] id, @RequestParam(value = "duration", defaultValue = "500") Integer duration) {
+    String strobe(@RequestParam(value = "id[]") String[] id, @RequestParam(value = "duration", defaultValue = "500")
+    Integer duration) {
         hue.strobe(duration, id);
         return "Strobe lamps (" + Arrays.asList(id) + ") for duration=" + duration + "ms";
     }
@@ -99,5 +100,13 @@ public class WebController {
                 (int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255));
 
         return "Changed colour of lamps (" + id + ") to #" + hex;
+    }
+
+    @RequestMapping(value = "/color", method = RequestMethod.POST)
+    @ResponseBody
+    String colorPost(@RequestParam(value = "id[]") String[] id, @RequestParam String hex) {
+        hue.loadState(new ColorState(Color.web(hex)), id);
+
+        return "Changed colour of lamps (" + Arrays.asList(id) + ") to " + hex;
     }
 }
