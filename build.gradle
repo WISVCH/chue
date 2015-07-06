@@ -43,8 +43,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
     compile("org.springframework.boot:spring-boot-starter-actuator")
 
-    compile("org.webjars.bower:wisvch-bootstrap-theme:0.0.1")
-    compile("org.webjars:bootstrap:3.3.5")
+    compile("org.webjars.bower:wisvch-bootstrap-theme:0.0.2")
     compile("org.webjars:jquery:2.1.4")
 
     testCompile("junit:junit")
