@@ -32,7 +32,7 @@ public class RandomColorState implements HueState {
             lightState.setSaturation(HueService.MAX_SATURATION);
             lightState.setBrightness(HueService.MAX_BRIGHTNESS);
 
-            lightColors.put(id, Color.hsb((double) (randHue * 360) / HueService.MAX_SATURATION, 1, 1));
+            lightColors.put(id, Color.hsb((double) (randHue * 360) / HueService.MAX_HUE, 1, 1));
 
             bridge.updateLightState(id, lightState, null); // If no bridge response is required then use this simpler form.
         }
