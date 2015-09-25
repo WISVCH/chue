@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Spring MVC Web Controller
@@ -31,8 +32,27 @@ public class WebController {
     @RequestMapping("/random/{id}")
     @ResponseBody
     String random(@PathVariable String id) {
-        hue.loadState(new RandomColorState(), id);
-        return "Randomised";
+        RandomColorState randomColorState = new RandomColorState();
+
+        hue.loadState(randomColorState, id);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Randomization complete:");
+
+        for (Map.Entry<String, Color> light : randomColorState.getLightColors().entrySet()) {
+            sb.append(" lamp ")
+                    .append(light.getKey())
+                    .append(" is now ")
+                    .append(String.format("#%02x%02x%02x",
+                            (int) (light.getValue().getRed() * 255),
+                            (int) (light.getValue().getGreen() * 255),
+                            (int) (light.getValue().getBlue() * 255)))
+                    .append(",");
+        }
+
+        sb.deleteCharAt(sb.length() - 1);
+
+        return sb.toString();
     }
 
     @RequestMapping("/strobe/all")

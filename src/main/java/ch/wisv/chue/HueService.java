@@ -26,7 +26,9 @@ import java.util.List;
 @Service
 public class HueService {
 
+    public static final int MAX_BRIGHTNESS = 254;
     public static final int MAX_HUE = 65535;
+    public static final int MAX_SATURATION = 254;
     private static final Logger log = LoggerFactory.getLogger(HueService.class);
 
     public interface Command {
