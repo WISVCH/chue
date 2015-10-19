@@ -116,7 +116,7 @@ public class HueService {
     };
 
     private String[] getLightIdentifiers(String... lightIdentifiers) {
-        if ("all".equals(lightIdentifiers[0])) {
+        if (lightIdentifiers.length == 0 || "all".equals(lightIdentifiers[0])) {
             List<PHLight> lights = getAllLights();
             String[] res = new String[lights.size()];
             for (int i = 0; i < lights.size(); i++) {
