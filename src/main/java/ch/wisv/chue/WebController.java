@@ -29,30 +29,22 @@ public class WebController {
         return "index";
     }
 
+    @RequestMapping("/random")
+    @ResponseBody
+    String random() {
+        RandomColorState randomColorState = new RandomColorState();
+        hue.loadState(randomColorState);
+
+        return "Randomization complete: " + getPrettyLightColors(randomColorState.getLightColors());
+    }
+
     @RequestMapping("/random/{id}")
     @ResponseBody
     String random(@PathVariable String id) {
         RandomColorState randomColorState = new RandomColorState();
-
         hue.loadState(randomColorState, id);
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Randomization complete:");
-
-        for (Map.Entry<String, Color> light : randomColorState.getLightColors().entrySet()) {
-            sb.append(" lamp ")
-                    .append(light.getKey())
-                    .append(" is now ")
-                    .append(String.format("#%02x%02x%02x",
-                            (int) (light.getValue().getRed() * 255),
-                            (int) (light.getValue().getGreen() * 255),
-                            (int) (light.getValue().getBlue() * 255)))
-                    .append(",");
-        }
-
-        sb.deleteCharAt(sb.length() - 1);
-
-        return sb.toString();
+        return "Randomization complete: " + getPrettyLightColors(randomColorState.getLightColors());
     }
 
     @RequestMapping("/strobe/all")
@@ -70,11 +62,25 @@ public class WebController {
         return "Strobe lamps (" + Arrays.asList(id) + ") for duration=" + duration + "ms";
     }
 
+    @RequestMapping("/colorloop")
+    @ResponseBody
+    String colorLoop() {
+        hue.loadState(new ColorLoopState());
+        return "Colorloop";
+    }
+
     @RequestMapping("/colorloop/{id}")
     @ResponseBody
     String colorLoop(@PathVariable String id) {
         hue.loadState(new ColorLoopState(), id);
         return "Colorloop";
+    }
+
+    @RequestMapping("/randomcolorloop")
+    @ResponseBody
+    String randomColorLoop() {
+        hue.loadState(new RandomColorLoopState());
+        return "Random Colorloop";
     }
 
     @RequestMapping("/randomcolorloop/{id}")
@@ -84,13 +90,19 @@ public class WebController {
         return "Random Colorloop";
     }
 
+    @RequestMapping("/alert")
+    @ResponseBody
+    String alert(@RequestParam(value = "timeout", defaultValue = "5000") Integer timeout) {
+        hue.loadEvent(new Alert(), timeout);
+        return String.format("Alerting for %d milliseconds", timeout);
+    }
+
     @RequestMapping("/alert/{id}")
     @ResponseBody
     String alert(@RequestParam(value = "timeout", defaultValue = "5000") Integer timeout, @PathVariable String id) {
         hue.loadEvent(new Alert(), timeout, id);
         return String.format("Alerting for %d milliseconds", timeout);
     }
-
 
     @RequestMapping({"/oranje", "/54"})
     @ResponseBody
@@ -128,5 +140,32 @@ public class WebController {
         hue.loadState(new ColorState(Color.web(hex)), id);
 
         return "Changed colour of lamps (" + Arrays.asList(id) + ") to " + hex;
+    }
+
+    /**
+     * Converts a map of lamps and their colors to a pretty String.
+     *
+     * @param affectedLights the map containing the affected lamps
+     * @return pretty String with hex values for all affected lamps
+     */
+    private static String getPrettyLightColors(Map<String, Color> affectedLights) {
+        StringBuilder sb = new StringBuilder();
+
+        for (Map.Entry<String, Color> light : affectedLights.entrySet()) {
+            sb.append("lamp ")
+                    .append(light.getKey())
+                    .append(" is now ")
+                    .append(String.format("#%02x%02x%02x",
+                            (int) (light.getValue().getRed() * 255),
+                            (int) (light.getValue().getGreen() * 255),
+                            (int) (light.getValue().getBlue() * 255)))
+                    .append(",");
+        }
+
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+        return sb.toString();
     }
 }
