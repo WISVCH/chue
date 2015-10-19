@@ -1,7 +1,7 @@
 package ch.wisv.chue.states;
 
+import ch.wisv.chue.hue.HueFacade;
 import com.philips.lighting.hue.sdk.utilities.PHUtilities;
-import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHLightState;
 import javafx.scene.paint.Color;
 
@@ -26,7 +26,7 @@ public class ColorState implements HueState {
     }
 
     @Override
-    public void execute(PHBridge bridge, String... lightIdentifiers) {
+    public void execute(HueFacade hueFacade, String... lightIdentifiers) {
         for (String id : lightIdentifiers) {
             PHLightState lightState = new PHLightState();
             float xy[] = PHUtilities.calculateXYFromRGB(
@@ -36,7 +36,7 @@ public class ColorState implements HueState {
 
             lightColors.put(id, color);
 
-            bridge.updateLightState(id, lightState, null); // If no bridge response is required then use this simpler form.
+            hueFacade.updateLightState(id, lightState); // If no bridge response is required then use this simpler form.
         }
     }
 }

@@ -2,7 +2,6 @@ package ch.wisv.chue;
 
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLamp;
-import com.philips.lighting.model.PHBridge;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -22,9 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class WebControllerTest {
     @Mock
-    private PHBridge phBridge;
-
-    @Mock
     private HueFacade hueFacade;
 
     @Spy
@@ -41,7 +37,6 @@ public class WebControllerTest {
 
         when(hueFacade.getAllLamps()).thenReturn(
                 Arrays.asList(new HueLamp("1", "Lamp 1"), new HueLamp("2", "Lamp 2"), new HueLamp("3", "Lamp 3")));
-        when(hueFacade.getBridge()).thenReturn(phBridge);
         hueService.setHueFacade(hueFacade);
 
         mockMvc = MockMvcBuilders.standaloneSetup(webController).build();

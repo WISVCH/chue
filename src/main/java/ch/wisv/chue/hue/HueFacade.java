@@ -1,6 +1,6 @@
 package ch.wisv.chue.hue;
 
-import com.philips.lighting.model.PHBridge;
+import com.philips.lighting.model.PHLightState;
 
 import java.util.List;
 
@@ -26,7 +26,10 @@ public interface HueFacade {
     List<HueLamp> getAllLamps();
 
     /**
-     * @return the bridge
+     * Sets the light state of the lamps
+     *
+     * @param id the identifier of the light
+     * @param lightState the new state
      */
-    PHBridge getBridge();
+    void updateLightState(String id, PHLightState lightState);
 }

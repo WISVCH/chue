@@ -10,6 +10,7 @@ import com.philips.lighting.hue.sdk.connection.impl.PHLocalBridgeDelegator;
 import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHHueError;
 import com.philips.lighting.model.PHHueParsingError;
+import com.philips.lighting.model.PHLightState;
 import org.json.hue.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,7 +143,7 @@ public class CHueFacade implements HueFacade {
     }
 
     @Override
-    public PHBridge getBridge() {
-        return bridge;
+    public void updateLightState(String id, PHLightState lightState) {
+        bridge.updateLightState(id, lightState, null);
     }
 }

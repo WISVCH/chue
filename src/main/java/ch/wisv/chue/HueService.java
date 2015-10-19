@@ -45,14 +45,14 @@ public class HueService {
     public void loadState(HueState state, String... lightIdentifiers) {
         String[] ids = getLightIdentifiers(lightIdentifiers);
         restoreState = () -> {
-            new BlankState().execute(hueFacade.getBridge(), ids);
-            state.execute(hueFacade.getBridge(), ids);
+            new BlankState().execute(hueFacade, ids);
+            state.execute(hueFacade, ids);
             log.debug("Light states restored!");
         };
 
         // Set everything to default before loading state.
-        new BlankState().execute(hueFacade.getBridge(), ids);
-        state.execute(hueFacade.getBridge(), ids);
+        new BlankState().execute(hueFacade, ids);
+        state.execute(hueFacade, ids);
     }
 
     /**
@@ -64,7 +64,7 @@ public class HueService {
      */
     public void loadEvent(HueEvent event, int duration, String... lightIdentifiers) {
         String[] ids = getLightIdentifiers(lightIdentifiers);
-        event.execute(hueFacade.getBridge(), ids);
+        event.execute(hueFacade, ids);
 
         Runnable restore = () -> {
             try {
@@ -76,7 +76,7 @@ public class HueService {
             if (this.restoreState != null)
                 this.restoreState.execute();
             else
-                new BlankState().execute(hueFacade.getBridge(), lightIdentifiers);
+                new BlankState().execute(hueFacade, lightIdentifiers);
         };
         new Thread(restore, "ServiceThread").start();
     }

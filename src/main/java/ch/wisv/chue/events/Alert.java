@@ -1,6 +1,6 @@
 package ch.wisv.chue.events;
 
-import com.philips.lighting.model.PHBridge;
+import ch.wisv.chue.hue.HueFacade;
 import com.philips.lighting.model.PHLight;
 import com.philips.lighting.model.PHLightState;
 
@@ -9,12 +9,12 @@ import com.philips.lighting.model.PHLightState;
  */
 public class Alert implements HueEvent {
 
-    public void execute(PHBridge bridge, String... lightIdentifiers) {
+    public void execute(HueFacade hueFacade, String... lightIdentifiers) {
         for (String id : lightIdentifiers) {
             PHLightState lightState = new PHLightState();
             lightState.setTransitionTime(0);
             lightState.setAlertMode(PHLight.PHLightAlertMode.ALERT_LSELECT);
-            bridge.updateLightState(id, lightState, null);
+            hueFacade.updateLightState(id, lightState);
         }
     }
 }
