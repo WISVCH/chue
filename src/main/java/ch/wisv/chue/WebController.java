@@ -25,7 +25,7 @@ public class WebController {
 
     @RequestMapping("/")
     String index(Model model) {
-        model.addAttribute("lights");
+        model.addAttribute("lights", hue.getAllLamps());
         return "index";
     }
 

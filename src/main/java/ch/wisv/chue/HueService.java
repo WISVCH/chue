@@ -2,6 +2,7 @@ package ch.wisv.chue;
 
 import ch.wisv.chue.events.HueEvent;
 import ch.wisv.chue.hue.HueFacade;
+import ch.wisv.chue.hue.HueLamp;
 import ch.wisv.chue.states.BlankState;
 import ch.wisv.chue.states.HueState;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class HueService {
@@ -27,7 +29,7 @@ public class HueService {
 
     private String[] getLightIdentifiers(String... lightIdentifiers) {
         if (lightIdentifiers.length == 0 || "all".equals(lightIdentifiers[0])) {
-            List<String> ids = hueFacade.getAllLightIdentifiers();
+            List<String> ids = hueFacade.getAllLamps().stream().map(HueLamp::getId).collect(Collectors.toList());
             return ids.toArray(new String[ids.size()]);
         } else {
             return lightIdentifiers;
@@ -87,6 +89,13 @@ public class HueService {
      */
     public void strobe(int millis, String... lightIdentifiers) {
         hueFacade.strobe(millis, getLightIdentifiers(lightIdentifiers));
+    }
+
+    /**
+     * @return list with all hue lamps
+     */
+    public List<HueLamp> getAllLamps() {
+        return hueFacade.getAllLamps();
     }
 
     /**

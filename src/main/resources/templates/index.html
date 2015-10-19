@@ -49,7 +49,7 @@
         <p>
             <select multiple="multiple" id="selected_light_ids">
                 <option th:each="light : ${lights}"
-                        th:value="${light.identifier}"
+                        th:value="${light.id}"
                         th:text="${light.name}"
                         style="background: ">Light Name</option>
             </select>

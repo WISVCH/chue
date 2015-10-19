@@ -23,7 +23,7 @@ public interface HueFacade {
     /**
      * @return list with String ids of all lights
      */
-    List<String> getAllLightIdentifiers();
+    List<HueLamp> getAllLamps();
 
     /**
      * @return the bridge

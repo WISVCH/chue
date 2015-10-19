@@ -1,6 +1,7 @@
 package ch.wisv.chue;
 
 import ch.wisv.chue.hue.HueFacade;
+import ch.wisv.chue.hue.HueLamp;
 import com.philips.lighting.model.PHBridge;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +39,8 @@ public class WebControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(hueFacade.getAllLightIdentifiers()).thenReturn(Arrays.asList("1", "2", "3"));
+        when(hueFacade.getAllLamps()).thenReturn(
+                Arrays.asList(new HueLamp("1", "Lamp 1"), new HueLamp("2", "Lamp 2"), new HueLamp("3", "Lamp 3")));
         when(hueFacade.getBridge()).thenReturn(phBridge);
         hueService.setHueFacade(hueFacade);
 

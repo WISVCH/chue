@@ -8,7 +8,6 @@ import com.philips.lighting.hue.sdk.bridge.impl.PHBridgeImpl;
 import com.philips.lighting.hue.sdk.connection.impl.PHHueHttpConnection;
 import com.philips.lighting.hue.sdk.connection.impl.PHLocalBridgeDelegator;
 import com.philips.lighting.model.PHBridge;
-import com.philips.lighting.model.PHBridgeResource;
 import com.philips.lighting.model.PHHueError;
 import com.philips.lighting.model.PHHueParsingError;
 import org.json.hue.JSONObject;
@@ -136,9 +135,9 @@ public class CHueFacade implements HueFacade {
     }
 
     @Override
-    public List<String> getAllLightIdentifiers() {
+    public List<HueLamp> getAllLamps() {
         return bridge.getResourceCache().getAllLights().stream()
-                .map(PHBridgeResource::getIdentifier)
+                .map(l -> new HueLamp(l.getIdentifier(), l.getName()))
                 .collect(Collectors.toList());
     }
 
