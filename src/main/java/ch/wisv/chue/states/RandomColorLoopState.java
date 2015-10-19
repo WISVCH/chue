@@ -1,6 +1,6 @@
 package ch.wisv.chue.states;
 
-import ch.wisv.chue.HueService;
+import ch.wisv.chue.hue.HueFacade;
 import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHLight;
 import com.philips.lighting.model.PHLightState;
@@ -16,7 +16,7 @@ public class RandomColorLoopState implements HueState {
         Random rand = new Random();
 
         for (String lightId : lightIdentifiers) {
-            int randHue = rand.nextInt(HueService.MAX_HUE);
+            int randHue = rand.nextInt(HueFacade.MAX_HUE);
 
             PHLightState lightState = new PHLightState();
             lightState.setEffectMode(PHLight.PHLightEffectMode.EFFECT_COLORLOOP);

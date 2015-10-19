@@ -25,7 +25,7 @@ public class WebController {
 
     @RequestMapping("/")
     String index(Model model) {
-        model.addAttribute("lights", hue.getAllLights());
+        model.addAttribute("lights");
         return "index";
     }
 
@@ -114,32 +114,28 @@ public class WebController {
     @RequestMapping(value = "/color/{id}/{hex:[a-fA-F0-9]{6}}", method = RequestMethod.GET)
     @ResponseBody
     String color(@PathVariable String id, @PathVariable String hex) {
-        Color color = Color.web('#' + hex);
+        ColorState colorState = new ColorState(Color.web('#' + hex));
+        hue.loadState(colorState, id);
 
-        hue.loadState(new ColorState(color), id);
-
-        return "Changed colour of lamps (" + id + ") to #" + hex;
+        return "Time for some new colours: " + getPrettyLightColors(colorState.getLightColors());
     }
 
     @RequestMapping(value = "/color/{id}/{colorName:(?![a-fA-F0-9]{6}).*}", method = RequestMethod.GET)
     @ResponseBody
     String colorFriendly(@PathVariable String id, @PathVariable String colorName) {
-        Color color = Color.valueOf(colorName);
+        ColorState colorState = new ColorState(Color.valueOf(colorName));
+        hue.loadState(colorState, id);
 
-        hue.loadState(new ColorState(color), id);
-
-        String hex = String.format("%02x%02x%02x",
-                (int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255));
-
-        return "Changed colour of lamps (" + id + ") to #" + hex;
+        return "Time for some new colours: " + getPrettyLightColors(colorState.getLightColors());
     }
 
     @RequestMapping(value = "/color", method = RequestMethod.POST)
     @ResponseBody
     String colorPost(@RequestParam(value = "id[]") String[] id, @RequestParam String hex) {
-        hue.loadState(new ColorState(Color.web(hex)), id);
+        ColorState colorState = new ColorState(Color.web(hex));
+        hue.loadState(colorState, id);
 
-        return "Changed colour of lamps (" + Arrays.asList(id) + ") to " + hex;
+        return "Time for some new colours: " + getPrettyLightColors(colorState.getLightColors());
     }
 
     /**
@@ -159,11 +155,11 @@ public class WebController {
                             (int) (light.getValue().getRed() * 255),
                             (int) (light.getValue().getGreen() * 255),
                             (int) (light.getValue().getBlue() * 255)))
-                    .append(",");
+                    .append(", ");
         }
 
-        if (sb.length() > 0) {
-            sb.deleteCharAt(sb.length() - 1);
+        if (sb.length() > 1) {
+            sb.delete(sb.length() - 2, sb.length());
         }
 
         return sb.toString();
