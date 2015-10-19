@@ -17,6 +17,7 @@ import com.philips.lighting.model.PHLight;
 import org.json.hue.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javafx.scene.paint.Color;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -169,6 +170,10 @@ public class HueService {
      * Meijer</a>
      */
     public void strobe(int millis, String... lightIdentifiers) {
+        strobe(millis, Color.WHITE, lightIdentifiers);
+    }
+
+    public void strobe(int millis, Color color, String... lightIdentifiers) {
         PHHueHttpConnection connection = new PHHueHttpConnection();
         final String httpAddress = ((PHLocalBridgeDelegator) ((PHBridgeImpl) bridge).getBridgeDelegator())
                 .buildHttpAddress().toString();
@@ -176,7 +181,13 @@ public class HueService {
         // Put a light definition aka `symbol` at bulb, using internal API call
         for (String light : lightIdentifiers) {
             JSONObject pointSymbol = new JSONObject();
-            pointSymbol.put("1", "0A00F1F01F1F1001F1FF100000000001F2F");
+            byte speed = 0x0A;
+            byte red = (byte) Math.round(color.getRed() * 255.f);
+            byte green = (byte) Math.round(color.getGreen() * 255.f);
+            byte blue = (byte) Math.round(color.getBlue() * 255.f);
+
+            String symbol = String.format("%02X000000FF%02X%02X%02X000000000000000000000000", speed, red, green, blue);
+            pointSymbol.put("1", symbol);
             String resp = connection.putData(pointSymbol.toString(), httpAddress + "lights/" + light + "/pointsymbol");
             log.debug(resp);
         }
@@ -189,7 +200,7 @@ public class HueService {
             // Kinda magic symbolselection. It is something like this:
             // for 01..05 step 01, [0i0x]+ where i is `symbol` and x is light bulb
             JSONObject strobeJSON = new JSONObject();
-            strobeJSON.put("symbolselection", "01010301010102010301");
+            strobeJSON.put("symbolselection", "01010501010102010301040105");
             strobeJSON.put("duration", millis);
             //group 0 contains all lights
             String resp = connection.putData(strobeJSON.toString(), httpAddress + "groups/0/transmitsymbol");
