@@ -29,10 +29,9 @@ public class ColorState implements HueState {
         for (String id : lightIdentifiers) {
             HueLightState lightState = new HueLightState();
             lightState.setColor(color);
+            hueFacade.updateLightState(id, lightState);
 
             lightColors.put(id, color);
-
-            hueFacade.updateLightState(id, lightState); // If no bridge response is required then use this simpler form.
         }
     }
 }

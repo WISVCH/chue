@@ -2,6 +2,7 @@ package ch.wisv.chue.states;
 
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLightState;
+import javafx.scene.paint.Color;
 
 import java.util.Random;
 
@@ -14,12 +15,12 @@ public class RandomColorLoopState implements HueState {
         Random rand = new Random();
 
         for (String lightId : lightIdentifiers) {
-            int randHue = rand.nextInt(HueFacade.MAX_HUE);
+            Color color = Color.hsb(rand.nextDouble() * 360, 1, 1);
 
             HueLightState lightState = new HueLightState();
             lightState.setEffectMode(HueLightState.EffectMode.COLORLOOP);
-            lightState.setHue(randHue);
-            hueFacade.updateLightState(lightId, lightState); // If no bridge response is required then use this simpler form.
+            lightState.setColor(color);
+            hueFacade.updateLightState(lightId, lightState);
         }
     }
 }

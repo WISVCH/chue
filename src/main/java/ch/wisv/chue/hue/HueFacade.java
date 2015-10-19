@@ -3,10 +3,6 @@ package ch.wisv.chue.hue;
 import java.util.List;
 
 public interface HueFacade {
-    int MAX_BRIGHTNESS = 254;
-    int MAX_HUE = 65535;
-    int MAX_SATURATION = 254;
-
     /**
      * Strobe the specified lights for the specified time.
      * Implemented on the facade because of the low-level operations.

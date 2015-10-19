@@ -12,7 +12,7 @@ public class ColorLoopState implements HueState {
         for (String lightId : lightIdentifiers) {
             HueLightState lightState = new HueLightState();
             lightState.setEffectMode(HueLightState.EffectMode.COLORLOOP);
-            hueFacade.updateLightState(lightId, lightState); // If no bridge response is required then use this simpler form.
+            hueFacade.updateLightState(lightId, lightState);
         }
     }
 }
