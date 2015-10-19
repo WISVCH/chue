@@ -1,8 +1,7 @@
 package ch.wisv.chue.states;
 
 import ch.wisv.chue.hue.HueFacade;
-import com.philips.lighting.hue.sdk.utilities.PHUtilities;
-import com.philips.lighting.model.PHLightState;
+import ch.wisv.chue.hue.HueLightState;
 import javafx.scene.paint.Color;
 
 import java.util.HashMap;
@@ -28,11 +27,8 @@ public class ColorState implements HueState {
     @Override
     public void execute(HueFacade hueFacade, String... lightIdentifiers) {
         for (String id : lightIdentifiers) {
-            PHLightState lightState = new PHLightState();
-            float xy[] = PHUtilities.calculateXYFromRGB(
-                    +(int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255), "LCT001");
-            lightState.setX(xy[0]);
-            lightState.setY(xy[1]);
+            HueLightState lightState = new HueLightState();
+            lightState.setColor(color);
 
             lightColors.put(id, color);
 

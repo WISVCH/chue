@@ -1,7 +1,7 @@
 package ch.wisv.chue.states;
 
 import ch.wisv.chue.hue.HueFacade;
-import com.philips.lighting.model.PHLightState;
+import ch.wisv.chue.hue.HueLightState;
 import javafx.scene.paint.Color;
 
 import java.util.HashMap;
@@ -26,7 +26,7 @@ public class RandomColorState implements HueState {
         for (String id : lightIdentifiers) {
             int randHue = rand.nextInt(HueFacade.MAX_HUE);
 
-            PHLightState lightState = new PHLightState();
+            HueLightState lightState = new HueLightState();
             lightState.setHue(randHue);
             lightState.setSaturation(HueFacade.MAX_SATURATION);
             lightState.setBrightness(HueFacade.MAX_BRIGHTNESS);

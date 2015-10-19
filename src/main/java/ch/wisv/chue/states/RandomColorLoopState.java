@@ -1,8 +1,7 @@
 package ch.wisv.chue.states;
 
 import ch.wisv.chue.hue.HueFacade;
-import com.philips.lighting.model.PHLight;
-import com.philips.lighting.model.PHLightState;
+import ch.wisv.chue.hue.HueLightState;
 
 import java.util.Random;
 
@@ -17,8 +16,8 @@ public class RandomColorLoopState implements HueState {
         for (String lightId : lightIdentifiers) {
             int randHue = rand.nextInt(HueFacade.MAX_HUE);
 
-            PHLightState lightState = new PHLightState();
-            lightState.setEffectMode(PHLight.PHLightEffectMode.EFFECT_COLORLOOP);
+            HueLightState lightState = new HueLightState();
+            lightState.setEffectMode(HueLightState.EffectMode.COLORLOOP);
             lightState.setHue(randHue);
             hueFacade.updateLightState(lightId, lightState); // If no bridge response is required then use this simpler form.
         }

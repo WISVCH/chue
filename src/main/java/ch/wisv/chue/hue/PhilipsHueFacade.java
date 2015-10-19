@@ -10,21 +10,18 @@ import com.philips.lighting.hue.sdk.connection.impl.PHLocalBridgeDelegator;
 import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHHueError;
 import com.philips.lighting.model.PHHueParsingError;
-import com.philips.lighting.model.PHLightState;
 import org.json.hue.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
-public class CHueFacade implements HueFacade {
+public class PhilipsHueFacade implements HueFacade {
 
-    private static final Logger log = LoggerFactory.getLogger(CHueFacade.class);
+    private static final Logger log = LoggerFactory.getLogger(PhilipsHueFacade.class);
 
     @Value("${BridgeUsername}")
     private String username;
@@ -67,7 +64,7 @@ public class CHueFacade implements HueFacade {
         public void onBridgeConnected(PHBridge bridge) {
             phHueSDK.setSelectedBridge(bridge);
             phHueSDK.enableHeartbeat(bridge, PHHueSDK.HB_INTERVAL);
-            CHueFacade.this.bridge = bridge;
+            PhilipsHueFacade.this.bridge = bridge;
             log.info("Connected");
         }
 
@@ -143,7 +140,7 @@ public class CHueFacade implements HueFacade {
     }
 
     @Override
-    public void updateLightState(String id, PHLightState lightState) {
-        bridge.updateLightState(id, lightState, null);
+    public void updateLightState(String id, HueLightState lightState) {
+        bridge.updateLightState(id, HueLightState.asPHLightState(lightState), null);
     }
 }

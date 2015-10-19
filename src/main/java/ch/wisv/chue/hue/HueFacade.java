@@ -1,7 +1,5 @@
 package ch.wisv.chue.hue;
 
-import com.philips.lighting.model.PHLightState;
-
 import java.util.List;
 
 public interface HueFacade {
@@ -31,5 +29,5 @@ public interface HueFacade {
      * @param id the identifier of the light
      * @param lightState the new state
      */
-    void updateLightState(String id, PHLightState lightState);
+    void updateLightState(String id, HueLightState lightState);
 }
