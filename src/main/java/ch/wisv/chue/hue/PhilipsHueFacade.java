@@ -7,9 +7,8 @@ import com.philips.lighting.hue.sdk.PHSDKListener;
 import com.philips.lighting.hue.sdk.bridge.impl.PHBridgeImpl;
 import com.philips.lighting.hue.sdk.connection.impl.PHHueHttpConnection;
 import com.philips.lighting.hue.sdk.connection.impl.PHLocalBridgeDelegator;
-import com.philips.lighting.model.PHBridge;
-import com.philips.lighting.model.PHHueError;
-import com.philips.lighting.model.PHHueParsingError;
+import com.philips.lighting.hue.sdk.utilities.PHUtilities;
+import com.philips.lighting.model.*;
 import org.json.hue.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,6 +140,44 @@ public class PhilipsHueFacade implements HueFacade {
 
     @Override
     public void updateLightState(String id, HueLightState lightState) {
-        bridge.updateLightState(id, HueLightState.asPHLightState(lightState), null);
+        PHLightState phLightState = new PHLightState();
+
+        if (lightState.getTransitionTime().isPresent()) {
+            phLightState.setTransitionTime(lightState.getTransitionTime().getAsInt());
+        }
+
+        if (lightState.getAlertMode().isPresent()) {
+            switch (lightState.getAlertMode().get()) {
+                case NONE:
+                    phLightState.setAlertMode(PHLight.PHLightAlertMode.ALERT_NONE);
+                    break;
+                case LSELECT:
+                    phLightState.setAlertMode(PHLight.PHLightAlertMode.ALERT_LSELECT);
+                    break;
+            }
+        }
+
+        if (lightState.getEffectMode().isPresent()) {
+            switch (lightState.getEffectMode().get()) {
+                case NONE:
+                    phLightState.setEffectMode(PHLight.PHLightEffectMode.EFFECT_NONE);
+                    break;
+                case COLORLOOP:
+                    phLightState.setEffectMode(PHLight.PHLightEffectMode.EFFECT_COLORLOOP);
+                    break;
+            }
+        }
+
+        if (lightState.getColor().isPresent()) {
+            float xy[] = PHUtilities.calculateXYFromRGB(
+                    (int) (lightState.getColor().get().getRed() * 255),
+                    (int) (lightState.getColor().get().getGreen() * 255),
+                    (int) (lightState.getColor().get().getBlue() * 255),
+                    "LCT001");
+            phLightState.setX(xy[0]);
+            phLightState.setY(xy[1]);
+        }
+
+        bridge.updateLightState(id, phLightState, null);
     }
 }
