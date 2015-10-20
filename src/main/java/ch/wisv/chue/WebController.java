@@ -152,9 +152,9 @@ public class WebController {
                     .append(light.getKey())
                     .append(" is now ")
                     .append(String.format("#%02x%02x%02x",
-                            (int) (light.getValue().getRed() * 255),
-                            (int) (light.getValue().getGreen() * 255),
-                            (int) (light.getValue().getBlue() * 255)))
+                            (int) Math.round(light.getValue().getRed() * 255.0),
+                            (int) Math.round(light.getValue().getGreen() * 255.0),
+                            (int) Math.round(light.getValue().getBlue() * 255.0)))
                     .append(", ");
         }
 

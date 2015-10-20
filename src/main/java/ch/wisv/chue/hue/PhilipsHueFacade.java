@@ -170,9 +170,9 @@ public class PhilipsHueFacade implements HueFacade {
 
         if (lightState.getColor().isPresent()) {
             float xy[] = PHUtilities.calculateXYFromRGB(
-                    (int) (lightState.getColor().get().getRed() * 255),
-                    (int) (lightState.getColor().get().getGreen() * 255),
-                    (int) (lightState.getColor().get().getBlue() * 255),
+                    (int) Math.round(lightState.getColor().get().getRed() * 255.0),
+                    (int) Math.round(lightState.getColor().get().getGreen() * 255.0),
+                    (int) Math.round(lightState.getColor().get().getBlue() * 255.0),
                     "LCT001");
             phLightState.setX(xy[0]);
             phLightState.setY(xy[1]);
