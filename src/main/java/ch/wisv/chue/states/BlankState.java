@@ -1,8 +1,7 @@
 package ch.wisv.chue.states;
 
-import com.philips.lighting.model.PHBridge;
-import com.philips.lighting.model.PHLight;
-import com.philips.lighting.model.PHLightState;
+import ch.wisv.chue.hue.HueFacade;
+import ch.wisv.chue.hue.HueLightState;
 
 /**
  * Blank state
@@ -10,14 +9,14 @@ import com.philips.lighting.model.PHLightState;
 public class BlankState implements HueState {
 
     @Override
-    public void execute(PHBridge bridge, String... lightIdentifiers) {
+    public void execute(HueFacade hueFacade, String... lightIdentifiers) {
 
         for (String id : lightIdentifiers) {
-            PHLightState lightState = new PHLightState();
-            lightState.setEffectMode(PHLight.PHLightEffectMode.EFFECT_NONE);
-            lightState.setAlertMode(PHLight.PHLightAlertMode.ALERT_NONE);
+            HueLightState lightState = new HueLightState();
+            lightState.setEffectMode(HueLightState.EffectMode.NONE);
+            lightState.setAlertMode(HueLightState.AlertMode.NONE);
             lightState.setTransitionTime(400);
-            bridge.updateLightState(id, lightState, null); // If no bridge response is required then use this simpler form.
+            hueFacade.updateLightState(id, lightState);
         }
     }
 }

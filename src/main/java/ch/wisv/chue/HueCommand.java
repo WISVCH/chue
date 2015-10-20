@@ -1,10 +1,10 @@
 package ch.wisv.chue;
 
-import com.philips.lighting.model.PHBridge;
+import ch.wisv.chue.hue.HueFacade;
 
 /**
  * Hue command interface
  */
 public interface HueCommand {
-    void execute(PHBridge bridge, String... lightIdentifiers);
+    void execute(HueFacade hueFacade, String... lightIdentifiers);
 }

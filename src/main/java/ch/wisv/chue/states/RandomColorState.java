@@ -1,8 +1,7 @@
 package ch.wisv.chue.states;
 
-import ch.wisv.chue.HueService;
-import com.philips.lighting.model.PHBridge;
-import com.philips.lighting.model.PHLightState;
+import ch.wisv.chue.hue.HueFacade;
+import ch.wisv.chue.hue.HueLightState;
 import javafx.scene.paint.Color;
 
 import java.util.HashMap;
@@ -21,20 +20,17 @@ public class RandomColorState implements HueState {
     }
 
     @Override
-    public void execute(PHBridge bridge, String... lightIdentifiers) {
+    public void execute(HueFacade hueFacade, String... lightIdentifiers) {
         Random rand = new Random();
 
         for (String id : lightIdentifiers) {
-            int randHue = rand.nextInt(HueService.MAX_HUE);
+            Color color = Color.hsb(rand.nextDouble() * 360, 1, 1);
 
-            PHLightState lightState = new PHLightState();
-            lightState.setHue(randHue);
-            lightState.setSaturation(HueService.MAX_SATURATION);
-            lightState.setBrightness(HueService.MAX_BRIGHTNESS);
+            HueLightState lightState = new HueLightState();
+            lightState.setColor(color);
+            hueFacade.updateLightState(id, lightState);
 
-            lightColors.put(id, Color.hsb((double) (randHue * 360) / HueService.MAX_HUE, 1, 1));
-
-            bridge.updateLightState(id, lightState, null); // If no bridge response is required then use this simpler form.
+            lightColors.put(id, color);
         }
     }
 }
