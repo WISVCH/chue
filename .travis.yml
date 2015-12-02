@@ -3,4 +3,4 @@ jdk:
 - oraclejdk8
 notifications:
   slack:
-    secure: qCt2WBSejLgzRwxcClUpi6ipYUbFa6p1AaUT22qG9zWGelY/4Pwbm1XjJkn7NdxHtc6k0tZoCEebG4Flw/QiUMmFL8jPb0XOBjpdVzFUcLMZ76sL+mYf/furnht396jxatJbjR8gKqmZOk3LjjuNPNoj/z7+GN0AhjYzxutUhmA=
+    secure: iqb9Dq06pGIHNrg3PbZ0QF4RWzs010kNfkv7OX+n0G4uBSs3wqkyXwmHnVL7yh5rC2GmH1S8ab/JE7mdkx9VWT9fqFuhJiaWF3DBKl8CiV+9mD+/VynlzU+DIg/o5An9MO9O18dy53Lt1Xuy8a7siCG1CkgroCtMWZh+n2agZqw=
