@@ -11,6 +11,7 @@ public interface HueFacade {
      * @param lightIdentifiers the lights to strobe
      * @see <a href="http://www.lmeijer.nl/archives/225-Do-hue-want-a-strobe-up-there.html">Strobe with Hue by Leon
      * Meijer</a>
+     * @throws BridgeUnavailableException iff the bridge is not available
      */
     void strobe(int millis, String... lightIdentifiers) throws BridgeUnavailableException;
 
@@ -29,6 +30,7 @@ public interface HueFacade {
      *
      * @param id the identifier of the light
      * @param lightState the new state
+     * @throws BridgeUnavailableException iff the bridge is not available
      */
     void updateLightState(String id, HueLightState lightState) throws BridgeUnavailableException;
 }

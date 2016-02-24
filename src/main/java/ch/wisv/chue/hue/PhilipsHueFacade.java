@@ -80,7 +80,7 @@ public class PhilipsHueFacade implements HueFacade {
 
         @Override
         public void onConnectionResumed(PHBridge bridge) {
-            log.error("Restored connection with bridge");
+            log.info("Restored connection with bridge");
             PhilipsHueFacade.this.bridge = bridge;
         }
 
@@ -95,14 +95,14 @@ public class PhilipsHueFacade implements HueFacade {
             } else if (code == PHMessageType.BRIDGE_NOT_FOUND) {
                 log.error("Not found");
             } else {
-                log.error("\tMessage: " + message);
+                log.error("\tError: " + message);
             }
         }
 
         @Override
         public void onParsingErrors(List<PHHueParsingError> parsingErrorsList) {
             for (PHHueParsingError parsingError : parsingErrorsList) {
-                System.out.println("ParsingError : " + parsingError.getMessage());
+                log.error("ParsingError: " + parsingError.getMessage());
             }
         }
     };
@@ -111,7 +111,7 @@ public class PhilipsHueFacade implements HueFacade {
     public void strobe(int millis, String... lightIdentifiers) throws BridgeUnavailableException {
         if (!bridgeAvailable()) {
             log.warn("Strobe failed: bridge not available!");
-            throw new BridgeUnavailableException("Bridge was not available...");
+            throw new BridgeUnavailableException();
         }
 
         PHHueHttpConnection connection = new PHHueHttpConnection();
@@ -157,7 +157,7 @@ public class PhilipsHueFacade implements HueFacade {
     public void updateLightState(String id, HueLightState lightState) throws BridgeUnavailableException {
         if (!bridgeAvailable()) {
             log.warn("Light state not updated: bridge not available!");
-            throw new BridgeUnavailableException("Bridge was not available...");
+            throw new BridgeUnavailableException();
         }
 
         PHLightState phLightState = new PHLightState();

@@ -159,7 +159,7 @@ public class WebController {
      */
     private static String getPrettyLightColors(Map<String, Color> affectedLights) {
         if (affectedLights.size() == 0) {
-            return "unfortunately, no lights were changed";
+            return "no lights were changed";
         }
 
         StringBuilder sb = new StringBuilder();

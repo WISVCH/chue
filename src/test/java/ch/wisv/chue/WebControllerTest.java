@@ -51,7 +51,7 @@ public class WebControllerTest {
 
         mockMvc.perform(get("/alert"))
                 .andExpect(status().isServiceUnavailable())
-                .andExpect(content().string(is("The event was not executed: The bridge is currently not available.")));
+                .andExpect(content().string(is("The event was not executed: Hue bridge is not available")));
     }
 
     @Test
@@ -61,7 +61,7 @@ public class WebControllerTest {
 
         mockMvc.perform(get("/random"))
                 .andExpect(status().isServiceUnavailable())
-                .andExpect(content().string(is("The state was not loaded: The bridge is currently not available.")));
+                .andExpect(content().string(is("The state was not loaded: Hue bridge is not available")));
     }
 
     @Test

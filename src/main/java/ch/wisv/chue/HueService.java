@@ -47,7 +47,7 @@ public class HueService {
      */
     public void loadState(HueState state, String... lightIdentifiers) {
         if (!hueFacade.bridgeAvailable()) {
-            throw new StateNotLoadedException("The bridge is currently not available.");
+            throw new StateNotLoadedException("Hue bridge is not available");
         }
 
         String[] ids = getLightIdentifiers(lightIdentifiers);
@@ -71,7 +71,7 @@ public class HueService {
      */
     public void loadEvent(HueEvent event, int duration, String... lightIdentifiers) {
         if (!hueFacade.bridgeAvailable()) {
-            throw new EventNotExecutedException("The bridge is currently not available.");
+            throw new EventNotExecutedException("Hue bridge is not available");
         }
 
         String[] ids = getLightIdentifiers(lightIdentifiers);
@@ -99,11 +99,16 @@ public class HueService {
      * @param lightIdentifiers the lights to strobe
      */
     public void strobe(int millis, String... lightIdentifiers) {
+        if (!hueFacade.bridgeAvailable()) {
+            throw new EventNotExecutedException("Hue bridge is not available");
+        }
+
         try {
             hueFacade.strobe(millis, getLightIdentifiers(lightIdentifiers));
         } catch (BridgeUnavailableException e) {
-            throw new EventNotExecutedException(e.getMessage());
+            e.printStackTrace();
         }
+
     }
 
     /**

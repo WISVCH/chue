@@ -1,7 +1,7 @@
 package ch.wisv.chue.hue;
 
 public class BridgeUnavailableException extends Exception {
-    public BridgeUnavailableException(String s) {
-        super(s);
+    public BridgeUnavailableException() {
+        super("Hue bridge is not available");
     }
 }
