@@ -74,7 +74,7 @@ public class PhilipsHueFacade implements HueFacade {
 
         @Override
         public void onConnectionLost(PHAccessPoint arg0) {
-            log.error("Lost connection with bridge");
+            log.warn("Lost connection with bridge");
             bridge = null;
         }
 
@@ -95,7 +95,7 @@ public class PhilipsHueFacade implements HueFacade {
             } else if (code == PHMessageType.BRIDGE_NOT_FOUND) {
                 log.error("Not found");
             } else {
-                log.error("\tError: " + message);
+                log.error("Error: " + message);
             }
         }
 

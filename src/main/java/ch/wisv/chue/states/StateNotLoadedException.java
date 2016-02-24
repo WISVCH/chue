@@ -6,4 +6,8 @@ public class StateNotLoadedException extends HueCommandNotExecutedException {
     public StateNotLoadedException(String message) {
         super(message);
     }
+
+    public StateNotLoadedException(Throwable cause) {
+        super(cause);
+    }
 }

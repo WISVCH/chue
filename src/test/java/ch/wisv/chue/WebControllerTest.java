@@ -1,5 +1,6 @@
 package ch.wisv.chue;
 
+import ch.wisv.chue.hue.BridgeUnavailableException;
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLamp;
 import org.junit.Before;
@@ -15,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyVararg;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -50,6 +54,18 @@ public class WebControllerTest {
         when(hueFacade.getAvailableLamps()).thenReturn(new ArrayList<>());
 
         mockMvc.perform(get("/alert"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(content().string(is("The event was not executed: Hue bridge is not available")));
+    }
+
+    // As strobe is always a bit devious, let's test that event as well
+    @Test
+    public void testEventFailBridgeUnavailableStrobe() throws Exception {
+        when(hueFacade.bridgeAvailable()).thenReturn(false);
+        when(hueFacade.getAvailableLamps()).thenReturn(new ArrayList<>());
+        doThrow(new BridgeUnavailableException()).when(hueFacade).strobe(anyInt(), anyVararg());
+
+        mockMvc.perform(get("/strobe/all"))
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(content().string(is("The event was not executed: Hue bridge is not available")));
     }

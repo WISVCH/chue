@@ -18,7 +18,7 @@ public class Alert implements HueEvent {
             try {
                 hueFacade.updateLightState(id, lightState);
             } catch (BridgeUnavailableException e) {
-                throw new EventNotExecutedException(e.getMessage());
+                throw new EventNotExecutedException(e);
             }
         }
     }

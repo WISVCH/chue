@@ -99,16 +99,11 @@ public class HueService {
      * @param lightIdentifiers the lights to strobe
      */
     public void strobe(int millis, String... lightIdentifiers) {
-        if (!hueFacade.bridgeAvailable()) {
-            throw new EventNotExecutedException("Hue bridge is not available");
-        }
-
         try {
             hueFacade.strobe(millis, getLightIdentifiers(lightIdentifiers));
         } catch (BridgeUnavailableException e) {
-            e.printStackTrace();
+            throw new EventNotExecutedException(e);
         }
-
     }
 
     /**

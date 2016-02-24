@@ -6,4 +6,8 @@ public class EventNotExecutedException extends HueCommandNotExecutedException {
     public EventNotExecutedException(String message) {
         super(message);
     }
+
+    public EventNotExecutedException(Throwable cause) {
+        super(cause);
+    }
 }

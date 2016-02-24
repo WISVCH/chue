@@ -33,7 +33,7 @@ public class RandomColorState implements HueState {
             try {
                 hueFacade.updateLightState(id, lightState);
             } catch (BridgeUnavailableException e) {
-                throw new StateNotLoadedException(e.getMessage());
+                throw new StateNotLoadedException(e);
             }
 
             lightColors.put(id, color);

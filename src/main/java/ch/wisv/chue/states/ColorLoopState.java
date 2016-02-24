@@ -17,7 +17,7 @@ public class ColorLoopState implements HueState {
             try {
                 hueFacade.updateLightState(lightId, lightState);
             } catch (BridgeUnavailableException e) {
-                throw new StateNotLoadedException(e.getMessage());
+                throw new StateNotLoadedException(e);
             }
         }
     }
