@@ -2,11 +2,12 @@ package ch.wisv.chue;
 
 import ch.wisv.chue.events.EventNotExecutedException;
 import ch.wisv.chue.events.HueEvent;
+import ch.wisv.chue.hue.BridgeUnavailableException;
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLamp;
-import ch.wisv.chue.hue.NotExecutedException;
 import ch.wisv.chue.states.BlankState;
 import ch.wisv.chue.states.HueState;
+import ch.wisv.chue.states.StateNotLoadedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,10 @@ public class HueService {
      * @param lightIdentifiers the lights to apply the state to
      */
     public void loadState(HueState state, String... lightIdentifiers) {
+        if (!hueFacade.bridgeAvailable()) {
+            throw new StateNotLoadedException("The bridge is currently not available.");
+        }
+
         String[] ids = getLightIdentifiers(lightIdentifiers);
         restoreState = () -> {
             new BlankState().execute(hueFacade, ids);
@@ -65,6 +70,10 @@ public class HueService {
      * @param lightIdentifiers the lights to apply the event to
      */
     public void loadEvent(HueEvent event, int duration, String... lightIdentifiers) {
+        if (!hueFacade.bridgeAvailable()) {
+            throw new EventNotExecutedException("The bridge is currently not available.");
+        }
+
         String[] ids = getLightIdentifiers(lightIdentifiers);
         event.execute(hueFacade, ids);
 
@@ -92,7 +101,7 @@ public class HueService {
     public void strobe(int millis, String... lightIdentifiers) {
         try {
             hueFacade.strobe(millis, getLightIdentifiers(lightIdentifiers));
-        } catch (NotExecutedException e) {
+        } catch (BridgeUnavailableException e) {
             throw new EventNotExecutedException(e.getMessage());
         }
     }

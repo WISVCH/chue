@@ -1,8 +1,8 @@
 package ch.wisv.chue.states;
 
+import ch.wisv.chue.hue.BridgeUnavailableException;
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLightState;
-import ch.wisv.chue.hue.NotExecutedException;
 import javafx.scene.paint.Color;
 
 import java.util.HashMap;
@@ -27,17 +27,13 @@ public class ColorState implements HueState {
 
     @Override
     public void execute(HueFacade hueFacade, String... lightIdentifiers) {
-        if (lightIdentifiers.length == 0) {
-            throw new StateNotLoadedException("No lights affected (is the bridge offline?)");
-        }
-
         for (String id : lightIdentifiers) {
             HueLightState lightState = new HueLightState();
             lightState.setColor(color);
 
             try {
                 hueFacade.updateLightState(id, lightState);
-            } catch (NotExecutedException e) {
+            } catch (BridgeUnavailableException e) {
                 throw new StateNotLoadedException(e.getMessage());
             }
 

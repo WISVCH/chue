@@ -1,8 +1,8 @@
 package ch.wisv.chue.events;
 
+import ch.wisv.chue.hue.BridgeUnavailableException;
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLightState;
-import ch.wisv.chue.hue.NotExecutedException;
 
 /**
  * Alert event
@@ -10,10 +10,6 @@ import ch.wisv.chue.hue.NotExecutedException;
 public class Alert implements HueEvent {
 
     public void execute(HueFacade hueFacade, String... lightIdentifiers) {
-        if (lightIdentifiers.length == 0) {
-            throw new EventNotExecutedException("No lights affected (is the bridge offline?)");
-        }
-
         for (String id : lightIdentifiers) {
             HueLightState lightState = new HueLightState();
             lightState.setTransitionTime(0);
@@ -21,7 +17,7 @@ public class Alert implements HueEvent {
 
             try {
                 hueFacade.updateLightState(id, lightState);
-            } catch (NotExecutedException e) {
+            } catch (BridgeUnavailableException e) {
                 throw new EventNotExecutedException(e.getMessage());
             }
         }

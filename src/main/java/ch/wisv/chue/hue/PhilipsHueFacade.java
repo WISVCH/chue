@@ -108,10 +108,10 @@ public class PhilipsHueFacade implements HueFacade {
     };
 
     @Override
-    public void strobe(int millis, String... lightIdentifiers) throws NotExecutedException {
+    public void strobe(int millis, String... lightIdentifiers) throws BridgeUnavailableException {
         if (!bridgeAvailable()) {
             log.warn("Strobe failed: bridge not available!");
-            throw new NotExecutedException("Bridge was not available...");
+            throw new BridgeUnavailableException("Bridge was not available...");
         }
 
         PHHueHttpConnection connection = new PHHueHttpConnection();
@@ -154,10 +154,10 @@ public class PhilipsHueFacade implements HueFacade {
     }
 
     @Override
-    public void updateLightState(String id, HueLightState lightState) throws NotExecutedException {
+    public void updateLightState(String id, HueLightState lightState) throws BridgeUnavailableException {
         if (!bridgeAvailable()) {
             log.warn("Light state not updated: bridge not available!");
-            throw new NotExecutedException("Bridge was not available...");
+            throw new BridgeUnavailableException("Bridge was not available...");
         }
 
         PHLightState phLightState = new PHLightState();
@@ -201,7 +201,7 @@ public class PhilipsHueFacade implements HueFacade {
         bridge.updateLightState(id, phLightState, null);
     }
 
-    private boolean bridgeAvailable() {
+    public boolean bridgeAvailable() {
         return bridge != null;
     }
 }

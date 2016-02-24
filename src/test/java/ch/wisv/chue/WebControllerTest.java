@@ -1,5 +1,6 @@
 package ch.wisv.chue;
 
+import ch.wisv.chue.hue.BridgeUnavailableException;
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLamp;
 import org.junit.Before;
@@ -32,7 +33,7 @@ public class WebControllerTest {
     private MockMvc mockMvc;
 
     @Before
-    public void setUp() {
+    public void setUp() throws BridgeUnavailableException {
         MockitoAnnotations.initMocks(this);
 
         when(hueFacade.getAvailableLamps()).thenReturn(

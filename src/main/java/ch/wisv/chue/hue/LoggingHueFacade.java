@@ -20,6 +20,12 @@ public class LoggingHueFacade implements HueFacade {
     }
 
     @Override
+    public boolean bridgeAvailable() {
+        // The theoretical bridge is available (otherwise this facade doesn't make sense)
+        return true;
+    }
+
+    @Override
     public void updateLightState(String id, HueLightState lightState) {
         log.info("Updating " + id + " to " + lightState);
     }
