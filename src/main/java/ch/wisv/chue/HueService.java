@@ -1,10 +1,13 @@
 package ch.wisv.chue;
 
+import ch.wisv.chue.events.EventNotExecutedException;
 import ch.wisv.chue.events.HueEvent;
+import ch.wisv.chue.hue.BridgeUnavailableException;
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLamp;
 import ch.wisv.chue.states.BlankState;
 import ch.wisv.chue.states.HueState;
+import ch.wisv.chue.states.StateNotLoadedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +32,7 @@ public class HueService {
 
     private String[] getLightIdentifiers(String... lightIdentifiers) {
         if (lightIdentifiers.length == 0 || "all".equals(lightIdentifiers[0])) {
-            List<String> ids = hueFacade.getAllLamps().stream().map(HueLamp::getId).collect(Collectors.toList());
+            List<String> ids = hueFacade.getAvailableLamps().stream().map(HueLamp::getId).collect(Collectors.toList());
             return ids.toArray(new String[ids.size()]);
         } else {
             return lightIdentifiers;
@@ -43,6 +46,10 @@ public class HueService {
      * @param lightIdentifiers the lights to apply the state to
      */
     public void loadState(HueState state, String... lightIdentifiers) {
+        if (!hueFacade.isBridgeAvailable()) {
+            throw new StateNotLoadedException("Hue bridge is not available");
+        }
+
         String[] ids = getLightIdentifiers(lightIdentifiers);
         restoreState = () -> {
             new BlankState().execute(hueFacade, ids);
@@ -63,6 +70,10 @@ public class HueService {
      * @param lightIdentifiers the lights to apply the event to
      */
     public void loadEvent(HueEvent event, int duration, String... lightIdentifiers) {
+        if (!hueFacade.isBridgeAvailable()) {
+            throw new EventNotExecutedException("Hue bridge is not available");
+        }
+
         String[] ids = getLightIdentifiers(lightIdentifiers);
         event.execute(hueFacade, ids);
 
@@ -88,14 +99,18 @@ public class HueService {
      * @param lightIdentifiers the lights to strobe
      */
     public void strobe(int millis, String... lightIdentifiers) {
-        hueFacade.strobe(millis, getLightIdentifiers(lightIdentifiers));
+        try {
+            hueFacade.strobe(millis, getLightIdentifiers(lightIdentifiers));
+        } catch (BridgeUnavailableException e) {
+            throw new EventNotExecutedException(e);
+        }
     }
 
     /**
      * @return list with all hue lamps
      */
-    public List<HueLamp> getAllLamps() {
-        return hueFacade.getAllLamps();
+    public List<HueLamp> getAvailableLamps() {
+        return hueFacade.getAvailableLamps();
     }
 
     /**

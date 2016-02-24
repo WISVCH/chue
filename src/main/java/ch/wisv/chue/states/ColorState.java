@@ -1,5 +1,6 @@
 package ch.wisv.chue.states;
 
+import ch.wisv.chue.hue.BridgeUnavailableException;
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLightState;
 import javafx.scene.paint.Color;
@@ -29,7 +30,12 @@ public class ColorState implements HueState {
         for (String id : lightIdentifiers) {
             HueLightState lightState = new HueLightState();
             lightState.setColor(color);
-            hueFacade.updateLightState(id, lightState);
+
+            try {
+                hueFacade.updateLightState(id, lightState);
+            } catch (BridgeUnavailableException e) {
+                throw new StateNotLoadedException(e);
+            }
 
             lightColors.put(id, color);
         }

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ public class PhilipsHueFacade implements HueFacade {
      */
     @PostConstruct
     public void connectToBridge() {
-        log.info("Connecting");
+        log.info("Connecting to bridge");
         if (username == null || hostname == null) {
             throw new RuntimeException("Missing hostname or username.");
         }
@@ -64,7 +65,7 @@ public class PhilipsHueFacade implements HueFacade {
             phHueSDK.setSelectedBridge(bridge);
             phHueSDK.enableHeartbeat(bridge, PHHueSDK.HB_INTERVAL);
             PhilipsHueFacade.this.bridge = bridge;
-            log.info("Connected");
+            log.info("Connected with bridge");
         }
 
         @Override
@@ -73,10 +74,18 @@ public class PhilipsHueFacade implements HueFacade {
 
         @Override
         public void onConnectionLost(PHAccessPoint arg0) {
+            if (isBridgeAvailable()) {
+                log.warn("Lost connection with bridge");
+                bridge = null;
+            }
         }
 
         @Override
-        public void onConnectionResumed(PHBridge arg0) {
+        public void onConnectionResumed(PHBridge bridge) {
+            if (!isBridgeAvailable()) {
+                log.info("Restored connection with bridge");
+                PhilipsHueFacade.this.bridge = bridge;
+            }
         }
 
         @Override
@@ -89,20 +98,26 @@ public class PhilipsHueFacade implements HueFacade {
                 log.error("Authentication failed");
             } else if (code == PHMessageType.BRIDGE_NOT_FOUND) {
                 log.error("Not found");
+            } else if (code != 22) { // magic number for 'No connection' message
+                log.error("Error: " + code + message);
             }
-            log.error("\tMessage: " + message);
         }
 
         @Override
         public void onParsingErrors(List<PHHueParsingError> parsingErrorsList) {
             for (PHHueParsingError parsingError : parsingErrorsList) {
-                System.out.println("ParsingError : " + parsingError.getMessage());
+                log.error("ParsingError: " + parsingError.getMessage());
             }
         }
     };
 
     @Override
-    public void strobe(int millis, String... lightIdentifiers) {
+    public void strobe(int millis, String... lightIdentifiers) throws BridgeUnavailableException {
+        if (!isBridgeAvailable()) {
+            log.warn("Strobe failed: bridge not available!");
+            throw new BridgeUnavailableException();
+        }
+
         PHHueHttpConnection connection = new PHHueHttpConnection();
         final String httpAddress = ((PHLocalBridgeDelegator) ((PHBridgeImpl) bridge).getBridgeDelegator())
                 .buildHttpAddress().toString();
@@ -132,14 +147,23 @@ public class PhilipsHueFacade implements HueFacade {
     }
 
     @Override
-    public List<HueLamp> getAllLamps() {
+    public List<HueLamp> getAvailableLamps() {
+        if (!isBridgeAvailable()) {
+            return new ArrayList<>();
+        }
+
         return bridge.getResourceCache().getAllLights().stream()
                 .map(l -> new HueLamp(l.getIdentifier(), l.getName()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void updateLightState(String id, HueLightState lightState) {
+    public void updateLightState(String id, HueLightState lightState) throws BridgeUnavailableException {
+        if (!isBridgeAvailable()) {
+            log.warn("Light state not updated: bridge not available!");
+            throw new BridgeUnavailableException();
+        }
+
         PHLightState phLightState = new PHLightState();
 
         if (lightState.getTransitionTime().isPresent()) {
@@ -179,5 +203,9 @@ public class PhilipsHueFacade implements HueFacade {
         }
 
         bridge.updateLightState(id, phLightState, null);
+    }
+
+    public boolean isBridgeAvailable() {
+        return bridge != null;
     }
 }

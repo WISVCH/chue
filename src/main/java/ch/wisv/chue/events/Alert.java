@@ -1,5 +1,6 @@
 package ch.wisv.chue.events;
 
+import ch.wisv.chue.hue.BridgeUnavailableException;
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLightState;
 
@@ -13,7 +14,12 @@ public class Alert implements HueEvent {
             HueLightState lightState = new HueLightState();
             lightState.setTransitionTime(0);
             lightState.setAlertMode(HueLightState.AlertMode.LSELECT);
-            hueFacade.updateLightState(id, lightState);
+
+            try {
+                hueFacade.updateLightState(id, lightState);
+            } catch (BridgeUnavailableException e) {
+                throw new EventNotExecutedException(e);
+            }
         }
     }
 }
