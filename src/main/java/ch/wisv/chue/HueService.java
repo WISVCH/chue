@@ -1,8 +1,10 @@
 package ch.wisv.chue;
 
+import ch.wisv.chue.events.EventNotExecutedException;
 import ch.wisv.chue.events.HueEvent;
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLamp;
+import ch.wisv.chue.hue.NotExecutedException;
 import ch.wisv.chue.states.BlankState;
 import ch.wisv.chue.states.HueState;
 import org.slf4j.Logger;
@@ -29,7 +31,7 @@ public class HueService {
 
     private String[] getLightIdentifiers(String... lightIdentifiers) {
         if (lightIdentifiers.length == 0 || "all".equals(lightIdentifiers[0])) {
-            List<String> ids = hueFacade.getAllLamps().stream().map(HueLamp::getId).collect(Collectors.toList());
+            List<String> ids = hueFacade.getAvailableLamps().stream().map(HueLamp::getId).collect(Collectors.toList());
             return ids.toArray(new String[ids.size()]);
         } else {
             return lightIdentifiers;
@@ -88,14 +90,18 @@ public class HueService {
      * @param lightIdentifiers the lights to strobe
      */
     public void strobe(int millis, String... lightIdentifiers) {
-        hueFacade.strobe(millis, getLightIdentifiers(lightIdentifiers));
+        try {
+            hueFacade.strobe(millis, getLightIdentifiers(lightIdentifiers));
+        } catch (NotExecutedException e) {
+            throw new EventNotExecutedException(e.getMessage());
+        }
     }
 
     /**
      * @return list with all hue lamps
      */
-    public List<HueLamp> getAllLamps() {
-        return hueFacade.getAllLamps();
+    public List<HueLamp> getAvailableLamps() {
+        return hueFacade.getAvailableLamps();
     }
 
     /**

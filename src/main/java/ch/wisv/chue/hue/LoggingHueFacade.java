@@ -15,7 +15,7 @@ public class LoggingHueFacade implements HueFacade {
     }
 
     @Override
-    public List<HueLamp> getAllLamps() {
+    public List<HueLamp> getAvailableLamps() {
         return Arrays.asList(new HueLamp("1", "Dummy 1"), new HueLamp("2", "Dummy 2"));
     }
 

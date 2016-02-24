@@ -1,12 +1,11 @@
 package ch.wisv.chue;
 
 import ch.wisv.chue.events.Alert;
-import ch.wisv.chue.states.ColorLoopState;
-import ch.wisv.chue.states.ColorState;
-import ch.wisv.chue.states.RandomColorLoopState;
-import ch.wisv.chue.states.RandomColorState;
+import ch.wisv.chue.events.EventNotExecutedException;
+import ch.wisv.chue.states.*;
 import javafx.scene.paint.Color;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +22,23 @@ public class WebController {
     @Autowired
     HueService hue;
 
+    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    @ExceptionHandler(EventNotExecutedException.class)
+    @ResponseBody
+    String handleNotExecuted(EventNotExecutedException e) {
+        return "The event was not executed: " + e.getMessage();
+    }
+
+    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    @ExceptionHandler(StateNotLoadedException.class)
+    @ResponseBody
+    String handleNotExecuted(StateNotLoadedException e) {
+        return "The state was not loaded: " + e.getMessage();
+    }
+
     @RequestMapping("/")
     String index(Model model) {
-        model.addAttribute("lights", hue.getAllLamps());
+        model.addAttribute("lights", hue.getAvailableLamps());
         return "index";
     }
 
@@ -145,6 +158,10 @@ public class WebController {
      * @return pretty String with hex values for all affected lamps
      */
     private static String getPrettyLightColors(Map<String, Color> affectedLights) {
+        if (affectedLights.size() == 0) {
+            return "unfortunately, no lights were changed";
+        }
+
         StringBuilder sb = new StringBuilder();
 
         for (Map.Entry<String, Color> light : affectedLights.entrySet()) {

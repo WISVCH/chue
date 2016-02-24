@@ -35,7 +35,7 @@ public class WebControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(hueFacade.getAllLamps()).thenReturn(
+        when(hueFacade.getAvailableLamps()).thenReturn(
                 Arrays.asList(new HueLamp("1", "Lamp 1"), new HueLamp("2", "Lamp 2"), new HueLamp("3", "Lamp 3")));
         hueService.setHueFacade(hueFacade);
 
