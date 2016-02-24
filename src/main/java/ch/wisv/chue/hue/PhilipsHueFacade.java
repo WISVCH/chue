@@ -74,7 +74,7 @@ public class PhilipsHueFacade implements HueFacade {
 
         @Override
         public void onConnectionLost(PHAccessPoint arg0) {
-            if (bridgeAvailable()) {
+            if (isBridgeAvailable()) {
                 log.warn("Lost connection with bridge");
                 bridge = null;
             }
@@ -82,7 +82,7 @@ public class PhilipsHueFacade implements HueFacade {
 
         @Override
         public void onConnectionResumed(PHBridge bridge) {
-            if (!bridgeAvailable()) {
+            if (!isBridgeAvailable()) {
                 log.info("Restored connection with bridge");
                 PhilipsHueFacade.this.bridge = bridge;
             }
@@ -113,7 +113,7 @@ public class PhilipsHueFacade implements HueFacade {
 
     @Override
     public void strobe(int millis, String... lightIdentifiers) throws BridgeUnavailableException {
-        if (!bridgeAvailable()) {
+        if (!isBridgeAvailable()) {
             log.warn("Strobe failed: bridge not available!");
             throw new BridgeUnavailableException();
         }
@@ -148,7 +148,7 @@ public class PhilipsHueFacade implements HueFacade {
 
     @Override
     public List<HueLamp> getAvailableLamps() {
-        if (!bridgeAvailable()) {
+        if (!isBridgeAvailable()) {
             return new ArrayList<>();
         }
 
@@ -159,7 +159,7 @@ public class PhilipsHueFacade implements HueFacade {
 
     @Override
     public void updateLightState(String id, HueLightState lightState) throws BridgeUnavailableException {
-        if (!bridgeAvailable()) {
+        if (!isBridgeAvailable()) {
             log.warn("Light state not updated: bridge not available!");
             throw new BridgeUnavailableException();
         }
@@ -205,7 +205,7 @@ public class PhilipsHueFacade implements HueFacade {
         bridge.updateLightState(id, phLightState, null);
     }
 
-    public boolean bridgeAvailable() {
+    public boolean isBridgeAvailable() {
         return bridge != null;
     }
 }

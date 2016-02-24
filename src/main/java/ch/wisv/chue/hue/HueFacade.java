@@ -23,7 +23,7 @@ public interface HueFacade {
     /**
      * @return true iff the bridge is available
      */
-    boolean bridgeAvailable();
+    boolean isBridgeAvailable();
 
     /**
      * Sets the light state of the lamps

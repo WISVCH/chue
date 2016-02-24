@@ -40,7 +40,7 @@ public class WebControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(hueFacade.bridgeAvailable()).thenReturn(true);
+        when(hueFacade.isBridgeAvailable()).thenReturn(true);
         when(hueFacade.getAvailableLamps()).thenReturn(
                 Arrays.asList(new HueLamp("1", "Lamp 1"), new HueLamp("2", "Lamp 2"), new HueLamp("3", "Lamp 3")));
         hueService.setHueFacade(hueFacade);
@@ -50,7 +50,7 @@ public class WebControllerTest {
 
     @Test
     public void testEventFailBridgeUnavailable() throws Exception {
-        when(hueFacade.bridgeAvailable()).thenReturn(false);
+        when(hueFacade.isBridgeAvailable()).thenReturn(false);
         when(hueFacade.getAvailableLamps()).thenReturn(new ArrayList<>());
 
         mockMvc.perform(get("/alert"))
@@ -61,7 +61,7 @@ public class WebControllerTest {
     // As strobe is always a bit devious, let's test that event as well
     @Test
     public void testEventFailBridgeUnavailableStrobe() throws Exception {
-        when(hueFacade.bridgeAvailable()).thenReturn(false);
+        when(hueFacade.isBridgeAvailable()).thenReturn(false);
         when(hueFacade.getAvailableLamps()).thenReturn(new ArrayList<>());
         doThrow(new BridgeUnavailableException()).when(hueFacade).strobe(anyInt(), anyVararg());
 
@@ -72,7 +72,7 @@ public class WebControllerTest {
 
     @Test
     public void testStateFailBridgeUnavailable() throws Exception {
-        when(hueFacade.bridgeAvailable()).thenReturn(false);
+        when(hueFacade.isBridgeAvailable()).thenReturn(false);
         when(hueFacade.getAvailableLamps()).thenReturn(new ArrayList<>());
 
         mockMvc.perform(get("/random"))

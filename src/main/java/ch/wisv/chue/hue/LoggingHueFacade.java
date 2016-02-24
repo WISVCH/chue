@@ -20,7 +20,7 @@ public class LoggingHueFacade implements HueFacade {
     }
 
     @Override
-    public boolean bridgeAvailable() {
+    public boolean isBridgeAvailable() {
         // The theoretical bridge is available (otherwise this facade doesn't make sense)
         return true;
     }

@@ -46,7 +46,7 @@ public class HueService {
      * @param lightIdentifiers the lights to apply the state to
      */
     public void loadState(HueState state, String... lightIdentifiers) {
-        if (!hueFacade.bridgeAvailable()) {
+        if (!hueFacade.isBridgeAvailable()) {
             throw new StateNotLoadedException("Hue bridge is not available");
         }
 
@@ -70,7 +70,7 @@ public class HueService {
      * @param lightIdentifiers the lights to apply the event to
      */
     public void loadEvent(HueEvent event, int duration, String... lightIdentifiers) {
-        if (!hueFacade.bridgeAvailable()) {
+        if (!hueFacade.isBridgeAvailable()) {
             throw new EventNotExecutedException("Hue bridge is not available");
         }
 
