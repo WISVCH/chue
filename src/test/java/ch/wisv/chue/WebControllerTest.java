@@ -1,6 +1,5 @@
 package ch.wisv.chue;
 
-import ch.wisv.chue.hue.BridgeUnavailableException;
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLamp;
 import org.junit.Before;
@@ -12,6 +11,7 @@ import org.mockito.Spy;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -33,14 +33,35 @@ public class WebControllerTest {
     private MockMvc mockMvc;
 
     @Before
-    public void setUp() throws BridgeUnavailableException {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        when(hueFacade.bridgeAvailable()).thenReturn(true);
         when(hueFacade.getAvailableLamps()).thenReturn(
                 Arrays.asList(new HueLamp("1", "Lamp 1"), new HueLamp("2", "Lamp 2"), new HueLamp("3", "Lamp 3")));
         hueService.setHueFacade(hueFacade);
 
         mockMvc = MockMvcBuilders.standaloneSetup(webController).build();
+    }
+
+    @Test
+    public void testEventFailBridgeUnavailable() throws Exception {
+        when(hueFacade.bridgeAvailable()).thenReturn(false);
+        when(hueFacade.getAvailableLamps()).thenReturn(new ArrayList<>());
+
+        mockMvc.perform(get("/alert"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(content().string(is("The event was not executed: The bridge is currently not available.")));
+    }
+
+    @Test
+    public void testStateFailBridgeUnavailable() throws Exception {
+        when(hueFacade.bridgeAvailable()).thenReturn(false);
+        when(hueFacade.getAvailableLamps()).thenReturn(new ArrayList<>());
+
+        mockMvc.perform(get("/random"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(content().string(is("The state was not loaded: The bridge is currently not available.")));
     }
 
     @Test
