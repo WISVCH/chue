@@ -39,7 +39,7 @@ public class PhilipsHueFacade implements HueFacade {
      */
     @PostConstruct
     public void connectToBridge() {
-        log.info("Connecting");
+        log.info("Connecting to bridge");
         if (username == null || hostname == null) {
             throw new RuntimeException("Missing hostname or username.");
         }
@@ -74,14 +74,18 @@ public class PhilipsHueFacade implements HueFacade {
 
         @Override
         public void onConnectionLost(PHAccessPoint arg0) {
-            log.warn("Lost connection with bridge");
-            bridge = null;
+            if (bridgeAvailable()) {
+                log.warn("Lost connection with bridge");
+                bridge = null;
+            }
         }
 
         @Override
         public void onConnectionResumed(PHBridge bridge) {
-            log.info("Restored connection with bridge");
-            PhilipsHueFacade.this.bridge = bridge;
+            if (!bridgeAvailable()) {
+                log.info("Restored connection with bridge");
+                PhilipsHueFacade.this.bridge = bridge;
+            }
         }
 
         @Override
@@ -94,8 +98,8 @@ public class PhilipsHueFacade implements HueFacade {
                 log.error("Authentication failed");
             } else if (code == PHMessageType.BRIDGE_NOT_FOUND) {
                 log.error("Not found");
-            } else {
-                log.error("Error: " + message);
+            } else if (code != 22) { // magic number for 'No connection' message
+                log.error("Error: " + code + message);
             }
         }
 
