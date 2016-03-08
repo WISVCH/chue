@@ -1,8 +1,11 @@
 package ch.wisv.chue.hue;
 
+import java.util.Optional;
+
 public class HueLamp {
     private String id;
     private String name;
+    private HueLightState lastState;
 
     public HueLamp(String id, String name) {
         this.id = id;
@@ -23,6 +26,14 @@ public class HueLamp {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Optional<HueLightState> getLastState() {
+        return Optional.ofNullable(lastState);
+    }
+
+    public void setLastState(HueLightState lastState) {
+        this.lastState = lastState;
     }
 
     @Override

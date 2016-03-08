@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,52 +32,41 @@ public class HueService {
 
     private Command restoreState;
 
-    private String[] getLightIdentifiers(String... lightIdentifiers) {
-        if (lightIdentifiers.length == 0 || "all".equals(lightIdentifiers[0])) {
-            List<String> ids = hueFacade.getAvailableLamps().stream().map(HueLamp::getId).collect(Collectors.toList());
-            return ids.toArray(new String[ids.size()]);
-        } else {
-            return lightIdentifiers;
-        }
-    }
-
     /**
-     * Load a state on the lights
+     * Load a state on the lamps
      *
      * @param state            the state to load
-     * @param lightIdentifiers the lights to apply the state to
+     * @param lamps the lamps to apply the state to
      */
-    public void loadState(HueState state, String... lightIdentifiers) {
+    public void loadState(HueState state, List<HueLamp> lamps) {
         if (!hueFacade.isBridgeAvailable()) {
             throw new StateNotLoadedException("Hue bridge is not available");
         }
 
-        String[] ids = getLightIdentifiers(lightIdentifiers);
         restoreState = () -> {
-            new BlankState().execute(hueFacade, ids);
-            state.execute(hueFacade, ids);
+            new BlankState().execute(hueFacade, lamps);
+            state.execute(hueFacade, lamps);
             log.debug("Light states restored!");
         };
 
         // Set everything to default before loading state.
-        new BlankState().execute(hueFacade, ids);
-        state.execute(hueFacade, ids);
+        new BlankState().execute(hueFacade, lamps);
+        state.execute(hueFacade, lamps);
     }
 
     /**
-     * Load an event on the lights
+     * Load an event on the lamps
      *
      * @param event the event to load
      * @param duration the time the event may take
-     * @param lightIdentifiers the lights to apply the event to
+     * @param lamps the lamps to apply the event to
      */
-    public void loadEvent(HueEvent event, int duration, String... lightIdentifiers) {
+    public void loadEvent(HueEvent event, int duration, List<HueLamp> lamps) {
         if (!hueFacade.isBridgeAvailable()) {
             throw new EventNotExecutedException("Hue bridge is not available");
         }
 
-        String[] ids = getLightIdentifiers(lightIdentifiers);
-        event.execute(hueFacade, ids);
+        event.execute(hueFacade, lamps);
 
         Runnable restore = () -> {
             try {
@@ -87,36 +78,62 @@ public class HueService {
             if (this.restoreState != null)
                 this.restoreState.execute();
             else
-                new BlankState().execute(hueFacade, lightIdentifiers);
+                new BlankState().execute(hueFacade, lamps);
         };
         new Thread(restore, "ServiceThread").start();
     }
 
     /**
-     * Strobe the specified lights for the specified time
+     * Strobe the provided lamps for the specified time
      *
      * @param millis duration in milliseconds
-     * @param lightIdentifiers the lights to strobe
+     * @param lamps the lamps to strobe
      */
-    public void strobe(int millis, String... lightIdentifiers) {
+    public void strobe(int millis, List<HueLamp> lamps) {
         try {
-            hueFacade.strobe(millis, getLightIdentifiers(lightIdentifiers));
+            hueFacade.strobe(millis, lamps);
         } catch (BridgeUnavailableException e) {
             throw new EventNotExecutedException(e);
         }
     }
 
     /**
-     * @return list with all hue lamps
+     * Fetch a lamp by its identifier
+     *
+     * @param id the identifier
+     * @return the Hue lamp
      */
-    public List<HueLamp> getAvailableLamps() {
-        return hueFacade.getAvailableLamps();
+    public HueLamp getLampById(String id) {
+        return hueFacade.getAvailableLamps().get(id);
     }
 
     /**
-     * Set the hue facade to use (for testing purposes)
+     * @return list with all Hue lamps
+     */
+    public List<HueLamp> getLamps() {
+        return hueFacade.getAvailableLamps().entrySet().stream()
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Fetch multiple lamps using a list of identifiers
      *
-     * @param hueFacade the new hue facade
+     * @param ids the identifiers of the requested lamps
+     * @return the lamps
+     */
+    public List<HueLamp> getLampsById(List<String> ids) {
+        List<HueLamp> lamps = new ArrayList<>();
+
+        ids.forEach(id -> lamps.add(hueFacade.getAvailableLamps().get(id)));
+
+        return lamps;
+    }
+
+    /**
+     * Set the Hue facade to use (for testing purposes)
+     *
+     * @param hueFacade the new Hue facade
      */
     protected void setHueFacade(HueFacade hueFacade) {
         this.hueFacade = hueFacade;

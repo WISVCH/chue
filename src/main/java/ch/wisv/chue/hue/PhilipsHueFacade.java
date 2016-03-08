@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public class PhilipsHueFacade implements HueFacade {
 
@@ -31,6 +31,8 @@ public class PhilipsHueFacade implements HueFacade {
     private PHHueSDK phHueSDK = PHHueSDK.getInstance();
 
     private PHBridge bridge;
+
+    private Map<String, HueLamp> lamps = new HashMap<>();
 
     /**
      * Connect to the last known access point.
@@ -52,6 +54,20 @@ public class PhilipsHueFacade implements HueFacade {
 
     private PHSDKListener listener = new PHSDKListener() {
 
+        private void updateLampMap() {
+            Map<String, HueLamp> newLamps = new HashMap<>();
+
+            for (PHLight lamp : bridge.getResourceCache().getAllLights()) {
+                if (lamps.containsKey(lamp.getIdentifier())) {
+                    newLamps.put(lamp.getIdentifier(), lamps.get(lamp.getIdentifier()));
+                } else {
+                    newLamps.put(lamp.getIdentifier(), new HueLamp(lamp.getIdentifier(), lamp.getName()));
+                }
+            }
+
+            lamps = newLamps;
+        }
+
         @Override
         public void onAccessPointsFound(List<PHAccessPoint> accessPointsList) {
         }
@@ -65,6 +81,7 @@ public class PhilipsHueFacade implements HueFacade {
             phHueSDK.setSelectedBridge(bridge);
             phHueSDK.enableHeartbeat(bridge, PHHueSDK.HB_INTERVAL);
             PhilipsHueFacade.this.bridge = bridge;
+            updateLampMap();
             log.info("Connected with bridge");
         }
 
@@ -85,6 +102,7 @@ public class PhilipsHueFacade implements HueFacade {
             if (!isBridgeAvailable()) {
                 log.info("Restored connection with bridge");
                 PhilipsHueFacade.this.bridge = bridge;
+                updateLampMap();
             }
         }
 
@@ -112,7 +130,7 @@ public class PhilipsHueFacade implements HueFacade {
     };
 
     @Override
-    public void strobe(int millis, String... lightIdentifiers) throws BridgeUnavailableException {
+    public void strobe(int millis, List<HueLamp> lamps) throws BridgeUnavailableException {
         if (!isBridgeAvailable()) {
             log.warn("Strobe failed: bridge not available!");
             throw new BridgeUnavailableException();
@@ -123,10 +141,11 @@ public class PhilipsHueFacade implements HueFacade {
                 .buildHttpAddress().toString();
 
         // Put a light definition aka `symbol` at bulb, using internal API call
-        for (String light : lightIdentifiers) {
+        for (HueLamp lamp : lamps) {
             JSONObject pointSymbol = new JSONObject();
             pointSymbol.put("1", "0A00F1F01F1F1001F1FF100000000001F2F");
-            String resp = connection.putData(pointSymbol.toString(), httpAddress + "lights/" + light + "/pointsymbol");
+            String resp = connection.putData(pointSymbol.toString(),
+                    httpAddress + "lights/" + lamp.getId() + "/pointsymbol");
             log.debug(resp);
         }
 
@@ -147,18 +166,16 @@ public class PhilipsHueFacade implements HueFacade {
     }
 
     @Override
-    public List<HueLamp> getAvailableLamps() {
+    public Map<String, HueLamp> getAvailableLamps() {
         if (!isBridgeAvailable()) {
-            return new ArrayList<>();
+            return new HashMap<>();
         }
 
-        return bridge.getResourceCache().getAllLights().stream()
-                .map(l -> new HueLamp(l.getIdentifier(), l.getName()))
-                .collect(Collectors.toList());
+        return lamps;
     }
 
     @Override
-    public void updateLightState(String id, HueLightState lightState) throws BridgeUnavailableException {
+    public void updateLightState(HueLamp lamp, HueLightState lightState) throws BridgeUnavailableException {
         if (!isBridgeAvailable()) {
             log.warn("Light state not updated: bridge not available!");
             throw new BridgeUnavailableException();
@@ -202,9 +219,11 @@ public class PhilipsHueFacade implements HueFacade {
             phLightState.setY(xy[1]);
         }
 
-        bridge.updateLightState(id, phLightState, null);
+        bridge.updateLightState(lamp.getId(), phLightState, null);
+        lamp.setLastState(lightState);
     }
 
+    @Override
     public boolean isBridgeAvailable() {
         return bridge != null;
     }

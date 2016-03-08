@@ -1,24 +1,25 @@
 package ch.wisv.chue.hue;
 
 import java.util.List;
+import java.util.Map;
 
 public interface HueFacade {
     /**
-     * Strobe the specified lights for the specified time.
+     * Strobe the provided lamps for the specified time.
      * Implemented on the facade because of the low-level operations.
      *
      * @param millis           duration in milliseconds
-     * @param lightIdentifiers the lights to strobe
+     * @param lamps the lamps to strobe
      * @see <a href="http://www.lmeijer.nl/archives/225-Do-hue-want-a-strobe-up-there.html">Strobe with Hue by Leon
      * Meijer</a>
      * @throws BridgeUnavailableException iff the bridge is not available
      */
-    void strobe(int millis, String... lightIdentifiers) throws BridgeUnavailableException;
+    void strobe(int millis, List<HueLamp> lamps) throws BridgeUnavailableException;
 
     /**
-     * @return list with String ids of all lights
+     * @return map of all lamps, with identifiers pointing to the corresponding Hue lamp
      */
-    List<HueLamp> getAvailableLamps();
+    Map<String, HueLamp> getAvailableLamps();
 
     /**
      * @return true iff the bridge is available
@@ -28,9 +29,9 @@ public interface HueFacade {
     /**
      * Sets the light state of the lamps
      *
-     * @param id the identifier of the light
+     * @param lamp the lamp that should be updated
      * @param lightState the new state
      * @throws BridgeUnavailableException iff the bridge is not available
      */
-    void updateLightState(String id, HueLightState lightState) throws BridgeUnavailableException;
+    void updateLightState(HueLamp lamp, HueLightState lightState) throws BridgeUnavailableException;
 }
