@@ -70,7 +70,7 @@ public class WebControllerTest {
         when(hueFacade.getAvailableLamps()).thenReturn(Collections.emptySortedMap());
         doThrow(new BridgeUnavailableException()).when(hueFacade).strobe(anyInt(), anyVararg());
 
-        mockMvc.perform(get("/strobe/all"))
+        mockMvc.perform(get("/strobe"))
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(content().string(is("The event was not executed: Hue bridge is not available")));
     }
@@ -87,7 +87,7 @@ public class WebControllerTest {
 
     @Test
     public void testAlertAll() throws Exception {
-        mockMvc.perform(get("/alert/all"))
+        mockMvc.perform(get("/alert"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(is("Alerting for 5000 milliseconds")));
     }
@@ -101,7 +101,7 @@ public class WebControllerTest {
 
     @Test
     public void testAlertAllTimeOut() throws Exception {
-        mockMvc.perform(get("/alert/all")
+        mockMvc.perform(get("/alert")
                 .param("timeout", "100"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(is("Alerting for 100 milliseconds")));
@@ -116,7 +116,7 @@ public class WebControllerTest {
 
     @Test
     public void testColorHexAll() throws Exception {
-        mockMvc.perform(get("/color/all/ff0000"))
+        mockMvc.perform(get("/color/ff0000"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
                         is("Time for some new colours: lamp 1 is now #ff0000, lamp 2 is now #ff0000, lamp 3 is now #ff0000")));
@@ -124,7 +124,7 @@ public class WebControllerTest {
 
     @Test
     public void testColorHexID() throws Exception {
-        mockMvc.perform(get("/color/1/0000ff"))
+        mockMvc.perform(get("/color/0000ff/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
                         is("Time for some new colours: lamp 1 is now #0000ff")));
@@ -132,7 +132,7 @@ public class WebControllerTest {
 
     @Test
     public void testColorFriendlyAll() throws Exception {
-        mockMvc.perform(get("/color/all/red"))
+        mockMvc.perform(get("/color/red"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
                         is("Time for some new colours: lamp 1 is now #ff0000, lamp 2 is now #ff0000, lamp 3 is now #ff0000")));
@@ -140,7 +140,7 @@ public class WebControllerTest {
 
     @Test
     public void testColorFriendlyID() throws Exception {
-        mockMvc.perform(get("/color/2/blue"))
+        mockMvc.perform(get("/color/blue/2"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
                         is("Time for some new colours: lamp 2 is now #0000ff")));

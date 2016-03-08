@@ -68,14 +68,14 @@ public class WebController {
         return sb.toString();
     }
 
-    @RequestMapping("/strobe/all")
+    @RequestMapping(value = "/strobe", method = RequestMethod.GET)
     @ResponseBody
     String strobeAll(@RequestParam(value = "duration", defaultValue = "500") Integer duration) {
         hue.strobe(duration, hue.getLamps());
         return "Strobe for duration=" + duration + "ms";
     }
 
-    @RequestMapping("/strobe")
+    @RequestMapping(value = "/strobe", method = RequestMethod.POST)
     @ResponseBody
     String strobe(@RequestParam(value = "id[]") String[] id, @RequestParam(value = "duration", defaultValue = "500")
     Integer duration) {
@@ -121,12 +121,7 @@ public class WebController {
     @RequestMapping("/alert/{id}")
     @ResponseBody
     String alert(@RequestParam(value = "timeout", defaultValue = "5000") Integer timeout, @PathVariable String id) {
-        if ("all".equals(id)) {
-            hue.loadEvent(new Alert(), timeout, hue.getLamps());
-        } else {
-            hue.loadEvent(new Alert(), timeout, Collections.singleton(hue.getLampById(id)));
-        }
-
+        hue.loadEvent(new Alert(), timeout, Collections.singleton(hue.getLampById(id)));
         return String.format("Alerting for %d milliseconds", timeout);
     }
 
@@ -137,36 +132,50 @@ public class WebController {
         return "B'voranje";
     }
 
-    @RequestMapping(value = "/color/{id}/{hex:[a-fA-F0-9]{6}}", method = RequestMethod.GET)
+    @RequestMapping(value = "/color/{hex:[a-fA-F0-9]{6}}/{id}", method = RequestMethod.GET)
     @ResponseBody
     String color(@PathVariable String id, @PathVariable String hex) {
         StringBuilder sb = new StringBuilder("Time for some new colours: ");
 
-        Set<HueLamp> lamps;
-        if ("all".equals(id)) {
-            lamps = hue.getLamps();
-        } else {
-            lamps = Collections.singleton(hue.getLampById(id));
-        }
-
+        Set<HueLamp> lamps = Collections.singleton(hue.getLampById(id));
         hue.loadState(new ColorState(Color.web('#' + hex)), lamps);
+
         sb.append(getPrettyColors(lamps));
         return sb.toString();
     }
 
-    @RequestMapping(value = "/color/{id}/{colorName:(?![a-fA-F0-9]{6}).*}", method = RequestMethod.GET)
+    @RequestMapping(value = "/color/{hex:[a-fA-F0-9]{6}}", method = RequestMethod.GET)
+    @ResponseBody
+    String color(@PathVariable String hex) {
+        StringBuilder sb = new StringBuilder("Time for some new colours: ");
+
+        Set<HueLamp> lamps = hue.getLamps();
+        hue.loadState(new ColorState(Color.web('#' + hex)), lamps);
+
+        sb.append(getPrettyColors(lamps));
+        return sb.toString();
+    }
+
+    @RequestMapping(value = "/color/{colorName:(?![a-fA-F0-9]{6}).*}/{id}", method = RequestMethod.GET)
     @ResponseBody
     String colorFriendly(@PathVariable String id, @PathVariable String colorName) {
         StringBuilder sb = new StringBuilder("Time for some new colours: ");
 
-        Set<HueLamp> lamps;
-        if ("all".equals(id)) {
-            lamps = hue.getLamps();
-        } else {
-            lamps = Collections.singleton(hue.getLampById(id));
-        }
-
+        Set<HueLamp> lamps = Collections.singleton(hue.getLampById(id));
         hue.loadState(new ColorState(Color.valueOf(colorName)), lamps);
+
+        sb.append(getPrettyColors(lamps));
+        return sb.toString();
+    }
+
+    @RequestMapping(value = "/color/{colorName:(?![a-fA-F0-9]{6}).*}", method = RequestMethod.GET)
+    @ResponseBody
+    String colorFriendly(@PathVariable String colorName) {
+        StringBuilder sb = new StringBuilder("Time for some new colours: ");
+
+        Set<HueLamp> lamps = hue.getLamps();
+        hue.loadState(new ColorState(Color.valueOf(colorName)), lamps);
+
         sb.append(getPrettyColors(lamps));
         return sb.toString();
     }
