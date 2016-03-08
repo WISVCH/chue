@@ -6,8 +6,8 @@ import ch.wisv.chue.hue.HueLamp;
 import ch.wisv.chue.hue.HueLightState;
 import javafx.scene.paint.Color;
 
-import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Random color loop state
@@ -15,7 +15,7 @@ import java.util.Random;
 public class RandomColorState implements HueState {
 
     @Override
-    public void execute(HueFacade hueFacade, List<HueLamp> lamps) {
+    public void execute(HueFacade hueFacade, Set<HueLamp> lamps) {
         Random rand = new Random();
 
         for (HueLamp lamp : lamps) {

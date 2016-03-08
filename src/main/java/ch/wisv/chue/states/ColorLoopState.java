@@ -5,7 +5,7 @@ import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLamp;
 import ch.wisv.chue.hue.HueLightState;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Color loop state
@@ -13,7 +13,7 @@ import java.util.List;
 public class ColorLoopState implements HueState {
 
     @Override
-    public void execute(HueFacade hueFacade, List<HueLamp> lamps) {
+    public void execute(HueFacade hueFacade, Set<HueLamp> lamps) {
         for (HueLamp lamp : lamps) {
             HueLightState lightState = new HueLightState();
             lightState.setEffectMode(HueLightState.EffectMode.COLORLOOP);

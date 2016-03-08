@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Spring MVC Web Controller
@@ -49,7 +49,7 @@ public class WebController {
     String random() {
         StringBuilder sb = new StringBuilder("Randomization complete: ");
 
-        List<HueLamp> lamps = hue.getLamps();
+        Set<HueLamp> lamps = hue.getLamps();
         hue.loadState(new RandomColorState(), lamps);
 
         sb.append(getPrettyColors(lamps));
@@ -62,7 +62,7 @@ public class WebController {
         StringBuilder sb = new StringBuilder("Randomization complete: ");
 
         HueLamp lamp = hue.getLampById(id);
-        hue.loadState(new RandomColorState(), Collections.singletonList(lamp));
+        hue.loadState(new RandomColorState(), Collections.singleton(lamp));
 
         sb.append(getPrettyColor(lamp));
         return sb.toString();
@@ -93,7 +93,7 @@ public class WebController {
     @RequestMapping("/colorloop/{id}")
     @ResponseBody
     String colorLoop(@PathVariable String id) {
-        hue.loadState(new ColorLoopState(), Collections.singletonList(hue.getLampById(id)));
+        hue.loadState(new ColorLoopState(), Collections.singleton(hue.getLampById(id)));
         return "Colorloop";
     }
 
@@ -107,7 +107,7 @@ public class WebController {
     @RequestMapping("/randomcolorloop/{id}")
     @ResponseBody
     String randomColorLoop(@PathVariable String id) {
-        hue.loadState(new RandomColorLoopState(), Collections.singletonList(hue.getLampById(id)));
+        hue.loadState(new RandomColorLoopState(), Collections.singleton(hue.getLampById(id)));
         return "Random Colorloop";
     }
 
@@ -124,7 +124,7 @@ public class WebController {
         if ("all".equals(id)) {
             hue.loadEvent(new Alert(), timeout, hue.getLamps());
         } else {
-            hue.loadEvent(new Alert(), timeout, Collections.singletonList(hue.getLampById(id)));
+            hue.loadEvent(new Alert(), timeout, Collections.singleton(hue.getLampById(id)));
         }
 
         return String.format("Alerting for %d milliseconds", timeout);
@@ -142,11 +142,11 @@ public class WebController {
     String color(@PathVariable String id, @PathVariable String hex) {
         StringBuilder sb = new StringBuilder("Time for some new colours: ");
 
-        List<HueLamp> lamps;
+        Set<HueLamp> lamps;
         if ("all".equals(id)) {
             lamps = hue.getLamps();
         } else {
-            lamps = Collections.singletonList(hue.getLampById(id));
+            lamps = Collections.singleton(hue.getLampById(id));
         }
 
         hue.loadState(new ColorState(Color.web('#' + hex)), lamps);
@@ -159,11 +159,11 @@ public class WebController {
     String colorFriendly(@PathVariable String id, @PathVariable String colorName) {
         StringBuilder sb = new StringBuilder("Time for some new colours: ");
 
-        List<HueLamp> lamps;
+        Set<HueLamp> lamps;
         if ("all".equals(id)) {
             lamps = hue.getLamps();
         } else {
-            lamps = Collections.singletonList(hue.getLampById(id));
+            lamps = Collections.singleton(hue.getLampById(id));
         }
 
         hue.loadState(new ColorState(Color.valueOf(colorName)), lamps);
@@ -176,7 +176,7 @@ public class WebController {
     String colorPost(@RequestParam(value = "id[]") String[] ids, @RequestParam String hex) {
         StringBuilder sb = new StringBuilder("Time for some new colours: ");
 
-        List<HueLamp> lamps = hue.getLampsById(Arrays.asList(ids));
+        Set<HueLamp> lamps = hue.getLampsById(Arrays.asList(ids));
         hue.loadState(new ColorState(Color.web(hex)), lamps);
 
         sb.append(getPrettyColors(lamps));
@@ -186,10 +186,10 @@ public class WebController {
     /**
      * Converts a list of lamps to a pretty String with identifiers and hex colors
      *
-     * @param lamps the list of lamps
+     * @param lamps the set of lamps
      * @return pretty String with identifiers and hex values of the colors of the lamps
      */
-    private static String getPrettyColors(List<HueLamp> lamps) {
+    private static String getPrettyColors(Set<HueLamp> lamps) {
         StringBuilder sb = new StringBuilder();
 
         lamps.stream().forEach(l -> sb.append(getPrettyColor(l)).append(", "));

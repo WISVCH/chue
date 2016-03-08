@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class LoggingHueFacade implements HueFacade {
     private static final Logger log = LoggerFactory.getLogger(LoggingHueFacade.class);
@@ -20,7 +20,7 @@ public class LoggingHueFacade implements HueFacade {
     }
 
     @Override
-    public void strobe(int millis, List<HueLamp> lamps) throws BridgeUnavailableException {
+    public void strobe(int millis, Set<HueLamp> lamps) throws BridgeUnavailableException {
         log.info("Strobing " + lamps + " for " + millis + " ms.");
     }
 

@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,7 +38,7 @@ public class HueService {
      * @param state            the state to load
      * @param lamps the lamps to apply the state to
      */
-    public void loadState(HueState state, List<HueLamp> lamps) {
+    public void loadState(HueState state, Set<HueLamp> lamps) {
         if (!hueFacade.isBridgeAvailable()) {
             throw new StateNotLoadedException("Hue bridge is not available");
         }
@@ -61,7 +61,7 @@ public class HueService {
      * @param duration the time the event may take
      * @param lamps the lamps to apply the event to
      */
-    public void loadEvent(HueEvent event, int duration, List<HueLamp> lamps) {
+    public void loadEvent(HueEvent event, int duration, Set<HueLamp> lamps) {
         if (!hueFacade.isBridgeAvailable()) {
             throw new EventNotExecutedException("Hue bridge is not available");
         }
@@ -89,7 +89,7 @@ public class HueService {
      * @param millis duration in milliseconds
      * @param lamps the lamps to strobe
      */
-    public void strobe(int millis, List<HueLamp> lamps) {
+    public void strobe(int millis, Set<HueLamp> lamps) {
         try {
             hueFacade.strobe(millis, lamps);
         } catch (BridgeUnavailableException e) {
@@ -108,26 +108,22 @@ public class HueService {
     }
 
     /**
-     * @return list with all Hue lamps
+     * @return set with all Hue lamps
      */
-    public List<HueLamp> getLamps() {
-        return hueFacade.getAvailableLamps().entrySet().stream()
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
+    public Set<HueLamp> getLamps() {
+        return new HashSet<>(hueFacade.getAvailableLamps().values());
     }
 
     /**
      * Fetch multiple lamps using a list of identifiers
      *
      * @param ids the identifiers of the requested lamps
-     * @return the lamps
+     * @return the set of lamps
      */
-    public List<HueLamp> getLampsById(List<String> ids) {
-        List<HueLamp> lamps = new ArrayList<>();
-
-        ids.forEach(id -> lamps.add(hueFacade.getAvailableLamps().get(id)));
-
-        return lamps;
+    public Set<HueLamp> getLampsById(List<String> ids) {
+        return ids.stream()
+                .map(id -> hueFacade.getAvailableLamps().get(id))
+                .collect(Collectors.toSet());
     }
 
     /**

@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class PhilipsHueFacade implements HueFacade {
 
@@ -130,7 +131,7 @@ public class PhilipsHueFacade implements HueFacade {
     };
 
     @Override
-    public void strobe(int millis, List<HueLamp> lamps) throws BridgeUnavailableException {
+    public void strobe(int millis, Set<HueLamp> lamps) throws BridgeUnavailableException {
         if (!isBridgeAvailable()) {
             log.warn("Strobe failed: bridge not available!");
             throw new BridgeUnavailableException();

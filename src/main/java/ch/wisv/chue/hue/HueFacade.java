@@ -1,7 +1,7 @@
 package ch.wisv.chue.hue;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface HueFacade {
     /**
@@ -14,7 +14,7 @@ public interface HueFacade {
      * Meijer</a>
      * @throws BridgeUnavailableException iff the bridge is not available
      */
-    void strobe(int millis, List<HueLamp> lamps) throws BridgeUnavailableException;
+    void strobe(int millis, Set<HueLamp> lamps) throws BridgeUnavailableException;
 
     /**
      * @return map of all lamps, with identifiers pointing to the corresponding Hue lamp
