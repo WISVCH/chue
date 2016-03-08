@@ -12,8 +12,9 @@ import org.mockito.Spy;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Matchers.anyInt;
@@ -40,7 +41,7 @@ public class WebControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        Map<String, HueLamp> lamps = new HashMap<>();
+        SortedMap<String, HueLamp> lamps = new TreeMap<>();
         lamps.put("1", new HueLamp("1", "Lamp 1"));
         lamps.put("2", new HueLamp("2", "Lamp 2"));
         lamps.put("3", new HueLamp("3", "Lamp 3"));
@@ -55,7 +56,7 @@ public class WebControllerTest {
     @Test
     public void testEventFailBridgeUnavailable() throws Exception {
         when(hueFacade.isBridgeAvailable()).thenReturn(false);
-        when(hueFacade.getAvailableLamps()).thenReturn(new HashMap<>());
+        when(hueFacade.getAvailableLamps()).thenReturn(Collections.emptySortedMap());
 
         mockMvc.perform(get("/alert"))
                 .andExpect(status().isServiceUnavailable())
@@ -66,7 +67,7 @@ public class WebControllerTest {
     @Test
     public void testEventFailBridgeUnavailableStrobe() throws Exception {
         when(hueFacade.isBridgeAvailable()).thenReturn(false);
-        when(hueFacade.getAvailableLamps()).thenReturn(new HashMap<>());
+        when(hueFacade.getAvailableLamps()).thenReturn(Collections.emptySortedMap());
         doThrow(new BridgeUnavailableException()).when(hueFacade).strobe(anyInt(), anyVararg());
 
         mockMvc.perform(get("/strobe/all"))
@@ -77,7 +78,7 @@ public class WebControllerTest {
     @Test
     public void testStateFailBridgeUnavailable() throws Exception {
         when(hueFacade.isBridgeAvailable()).thenReturn(false);
-        when(hueFacade.getAvailableLamps()).thenReturn(new HashMap<>());
+        when(hueFacade.getAvailableLamps()).thenReturn(Collections.emptySortedMap());
 
         mockMvc.perform(get("/random"))
                 .andExpect(status().isServiceUnavailable())

@@ -4,14 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class LoggingHueFacade implements HueFacade {
     private static final Logger log = LoggerFactory.getLogger(LoggingHueFacade.class);
 
-    private Map<String, HueLamp> lamps = new HashMap<>();
+    private SortedMap<String, HueLamp> lamps = new TreeMap<>();
 
     @PostConstruct
     public void init() {
@@ -25,7 +25,7 @@ public class LoggingHueFacade implements HueFacade {
     }
 
     @Override
-    public Map<String, HueLamp> getAvailableLamps() {
+    public SortedMap<String, HueLamp> getAvailableLamps() {
         return lamps;
     }
 

@@ -2,7 +2,7 @@ package ch.wisv.chue.hue;
 
 import java.util.Optional;
 
-public class HueLamp {
+public class HueLamp implements Comparable<HueLamp> {
     private String id;
     private String name;
     private HueLightState lastState;
@@ -52,5 +52,10 @@ public class HueLamp {
         int result = id.hashCode();
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public int compareTo(HueLamp o) {
+        return id.compareTo(o.getId());
     }
 }

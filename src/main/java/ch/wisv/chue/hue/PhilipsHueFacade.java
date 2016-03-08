@@ -15,10 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class PhilipsHueFacade implements HueFacade {
 
@@ -33,7 +30,7 @@ public class PhilipsHueFacade implements HueFacade {
 
     private PHBridge bridge;
 
-    private Map<String, HueLamp> lamps = new HashMap<>();
+    private SortedMap<String, HueLamp> lamps = new TreeMap<>();
 
     /**
      * Connect to the last known access point.
@@ -56,7 +53,7 @@ public class PhilipsHueFacade implements HueFacade {
     private PHSDKListener listener = new PHSDKListener() {
 
         private void updateLampMap() {
-            Map<String, HueLamp> newLamps = new HashMap<>();
+            SortedMap<String, HueLamp> newLamps = new TreeMap<>();
 
             for (PHLight lamp : bridge.getResourceCache().getAllLights()) {
                 if (lamps.containsKey(lamp.getIdentifier())) {
@@ -167,9 +164,9 @@ public class PhilipsHueFacade implements HueFacade {
     }
 
     @Override
-    public Map<String, HueLamp> getAvailableLamps() {
+    public SortedMap<String, HueLamp> getAvailableLamps() {
         if (!isBridgeAvailable()) {
-            return new HashMap<>();
+            return Collections.emptySortedMap();
         }
 
         return lamps;

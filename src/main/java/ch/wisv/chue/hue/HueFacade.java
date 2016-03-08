@@ -1,7 +1,7 @@
 package ch.wisv.chue.hue;
 
-import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 
 public interface HueFacade {
     /**
@@ -19,7 +19,7 @@ public interface HueFacade {
     /**
      * @return map of all lamps, with identifiers pointing to the corresponding Hue lamp
      */
-    Map<String, HueLamp> getAvailableLamps();
+    SortedMap<String, HueLamp> getAvailableLamps();
 
     /**
      * @return true iff the bridge is available

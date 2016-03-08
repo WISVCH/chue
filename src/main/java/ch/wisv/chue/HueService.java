@@ -13,9 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Service
@@ -110,8 +111,8 @@ public class HueService {
     /**
      * @return set with all Hue lamps
      */
-    public Set<HueLamp> getLamps() {
-        return new HashSet<>(hueFacade.getAvailableLamps().values());
+    public SortedSet<HueLamp> getLamps() {
+        return new TreeSet<>(hueFacade.getAvailableLamps().values());
     }
 
     /**
