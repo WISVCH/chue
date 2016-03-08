@@ -3,17 +3,18 @@ package ch.wisv.chue;
 import ch.wisv.chue.hue.BridgeUnavailableException;
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLamp;
+import ch.wisv.chue.hue.LoggingHueFacade;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Matchers.anyInt;
@@ -25,8 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class WebControllerTest {
-    @Mock
-    private HueFacade hueFacade;
+    @Spy
+    private HueFacade hueFacade = new LoggingHueFacade();
 
     @Spy
     private HueService hueService = new HueService();
@@ -40,9 +41,13 @@ public class WebControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        SortedMap<String, HueLamp> lamps = new TreeMap<>();
+        lamps.put("1", new HueLamp("1", "Lamp 1"));
+        lamps.put("2", new HueLamp("2", "Lamp 2"));
+        lamps.put("3", new HueLamp("3", "Lamp 3"));
+
         when(hueFacade.isBridgeAvailable()).thenReturn(true);
-        when(hueFacade.getAvailableLamps()).thenReturn(
-                Arrays.asList(new HueLamp("1", "Lamp 1"), new HueLamp("2", "Lamp 2"), new HueLamp("3", "Lamp 3")));
+        when(hueFacade.getAvailableLamps()).thenReturn(lamps);
         hueService.setHueFacade(hueFacade);
 
         mockMvc = MockMvcBuilders.standaloneSetup(webController).build();
@@ -51,7 +56,7 @@ public class WebControllerTest {
     @Test
     public void testEventFailBridgeUnavailable() throws Exception {
         when(hueFacade.isBridgeAvailable()).thenReturn(false);
-        when(hueFacade.getAvailableLamps()).thenReturn(new ArrayList<>());
+        when(hueFacade.getAvailableLamps()).thenReturn(Collections.emptySortedMap());
 
         mockMvc.perform(get("/alert"))
                 .andExpect(status().isServiceUnavailable())
@@ -62,7 +67,7 @@ public class WebControllerTest {
     @Test
     public void testEventFailBridgeUnavailableStrobe() throws Exception {
         when(hueFacade.isBridgeAvailable()).thenReturn(false);
-        when(hueFacade.getAvailableLamps()).thenReturn(new ArrayList<>());
+        when(hueFacade.getAvailableLamps()).thenReturn(Collections.emptySortedMap());
         doThrow(new BridgeUnavailableException()).when(hueFacade).strobe(anyInt(), anyVararg());
 
         mockMvc.perform(get("/strobe/all"))
@@ -73,7 +78,7 @@ public class WebControllerTest {
     @Test
     public void testStateFailBridgeUnavailable() throws Exception {
         when(hueFacade.isBridgeAvailable()).thenReturn(false);
-        when(hueFacade.getAvailableLamps()).thenReturn(new ArrayList<>());
+        when(hueFacade.getAvailableLamps()).thenReturn(Collections.emptySortedMap());
 
         mockMvc.perform(get("/random"))
                 .andExpect(status().isServiceUnavailable())

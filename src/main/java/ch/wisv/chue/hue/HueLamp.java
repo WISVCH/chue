@@ -1,8 +1,11 @@
 package ch.wisv.chue.hue;
 
-public class HueLamp {
+import java.util.Optional;
+
+public class HueLamp implements Comparable<HueLamp> {
     private String id;
     private String name;
+    private HueLightState lastState;
 
     public HueLamp(String id, String name) {
         this.id = id;
@@ -25,6 +28,14 @@ public class HueLamp {
         this.name = name;
     }
 
+    public Optional<HueLightState> getLastState() {
+        return Optional.ofNullable(lastState);
+    }
+
+    public void setLastState(HueLightState lastState) {
+        this.lastState = lastState;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -41,5 +52,10 @@ public class HueLamp {
         int result = id.hashCode();
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public int compareTo(HueLamp o) {
+        return id.compareTo(o.getId());
     }
 }
