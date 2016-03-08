@@ -124,7 +124,7 @@ public class WebControllerTest {
 
     @Test
     public void testColorHexID() throws Exception {
-        mockMvc.perform(get("/color/1/0000ff"))
+        mockMvc.perform(get("/color/0000ff/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
                         is("Time for some new colours: lamp 1 is now #0000ff")));
@@ -140,7 +140,7 @@ public class WebControllerTest {
 
     @Test
     public void testColorFriendlyID() throws Exception {
-        mockMvc.perform(get("/color/2/blue"))
+        mockMvc.perform(get("/color/blue/2"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
                         is("Time for some new colours: lamp 2 is now #0000ff")));

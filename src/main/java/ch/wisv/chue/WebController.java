@@ -132,7 +132,7 @@ public class WebController {
         return "B'voranje";
     }
 
-    @RequestMapping(value = "/color/{id}/{hex:[a-fA-F0-9]{6}}", method = RequestMethod.GET)
+    @RequestMapping(value = "/color/{hex:[a-fA-F0-9]{6}}/{id}", method = RequestMethod.GET)
     @ResponseBody
     String color(@PathVariable String id, @PathVariable String hex) {
         StringBuilder sb = new StringBuilder("Time for some new colours: ");
@@ -156,7 +156,7 @@ public class WebController {
         return sb.toString();
     }
 
-    @RequestMapping(value = "/color/{id}/{colorName:(?![a-fA-F0-9]{6}).*}", method = RequestMethod.GET)
+    @RequestMapping(value = "/color/{colorName:(?![a-fA-F0-9]{6}).*}/{id}", method = RequestMethod.GET)
     @ResponseBody
     String colorFriendly(@PathVariable String id, @PathVariable String colorName) {
         StringBuilder sb = new StringBuilder("Time for some new colours: ");
