@@ -44,6 +44,11 @@ public class PhilipsHueFacade implements HueFacade {
             throw new RuntimeException("Missing hostname or username.");
         }
         phHueSDK.getNotificationManager().registerSDKListener(listener);
+
+        // To enable pushlink authentication:
+        // PHBridgeSearchManager sm = (PHBridgeSearchManager) phHueSDK.getSDKService(PHHueSDK.SEARCH_BRIDGE);
+        // sm.search(true, true);
+
         PHAccessPoint accessPoint = new PHAccessPoint();
         accessPoint.setUsername(username);
         accessPoint.setIpAddress(hostname);
@@ -68,19 +73,25 @@ public class PhilipsHueFacade implements HueFacade {
 
         @Override
         public void onAccessPointsFound(List<PHAccessPoint> accessPointsList) {
+            PHAccessPoint accessPoint = accessPointsList.get(0);
+            log.warn("Found {} bridges, connecting to first bridge: {}", accessPointsList.size(), accessPoint
+                    .getIpAddress());
+            phHueSDK.connect(accessPoint);
         }
 
         @Override
         public void onAuthenticationRequired(PHAccessPoint accessPoint) {
+            log.warn("Authentication required, push button");
+            phHueSDK.startPushlinkAuthentication(accessPoint);
         }
 
         @Override
-        public void onBridgeConnected(PHBridge bridge) {
+        public void onBridgeConnected(PHBridge bridge, String username) {
             phHueSDK.setSelectedBridge(bridge);
             phHueSDK.enableHeartbeat(bridge, PHHueSDK.HB_INTERVAL);
             PhilipsHueFacade.this.bridge = bridge;
             updateLampMap();
-            log.info("Connected with bridge");
+            log.info("Connected to bridge, username {}", username);
         }
 
         @Override
@@ -115,7 +126,7 @@ public class PhilipsHueFacade implements HueFacade {
             } else if (code == PHMessageType.BRIDGE_NOT_FOUND) {
                 log.error("Not found");
             } else if (code != 22) { // magic number for 'No connection' message
-                log.error("Error: " + code + message);
+                log.error("Error {}: {}", code, message);
             }
         }
 
