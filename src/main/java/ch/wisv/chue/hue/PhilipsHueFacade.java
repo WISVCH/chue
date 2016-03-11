@@ -13,6 +13,8 @@ import org.json.hue.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -146,8 +148,7 @@ public class PhilipsHueFacade implements HueFacade {
         }
 
         PHHueHttpConnection connection = new PHHueHttpConnection();
-        final String httpAddress = ((PHLocalBridgeDelegator) ((PHBridgeImpl) bridge).getBridgeDelegator())
-                .buildHttpAddress().toString();
+        final String httpAddress = buildBridgeHttpAddress();
 
         // Put a light definition aka `symbol` at bulb, using internal API call
         for (HueLamp lamp : lamps) {
@@ -172,6 +173,11 @@ public class PhilipsHueFacade implements HueFacade {
             String resp = connection.putData(strobeJSON.toString(), httpAddress + "groups/0/transmitsymbol");
             log.debug(resp);
         }
+    }
+
+    private String buildBridgeHttpAddress() {
+        return ((PHLocalBridgeDelegator) ((PHBridgeImpl) bridge).getBridgeDelegator())
+                .buildHttpAddress().toString();
     }
 
     @Override
@@ -235,5 +241,54 @@ public class PhilipsHueFacade implements HueFacade {
     @Override
     public boolean isBridgeAvailable() {
         return bridge != null;
+    }
+
+    /**
+     * Check for Hue software update, and install it if available.
+     * <p>
+     * http://www.developers.meethue.com/documentation/software-update
+     */
+    @Scheduled(cron = "54 54 2 * * *")
+    public void updateBridgeFirmware() {
+        RestTemplate rt = new RestTemplate();
+        String bridgeConfigUrl = buildBridgeHttpAddress() + "config";
+        HueSWUpdate swUpdate = rt.getForEntity(bridgeConfigUrl, HueConfig.class).getBody().getSWUpdate();
+
+        if (swUpdate.isNotify()) {
+            log.info("Bridge update completed");
+            rt.put(bridgeConfigUrl, "{\"swupdate\": {\"notify\":false}}");
+        } else if (swUpdate.getUpdatestate() == 0) {
+            log.info("Initiating bridge update check");
+            rt.put(bridgeConfigUrl, "{\"swupdate\": {\"checkforupdate\":true}}");
+        } else if (swUpdate.getUpdatestate() == 2) {
+            log.info("Installing bridge update: {}", swUpdate.getText());
+            rt.put(bridgeConfigUrl, "{\"swupdate\": {\"updatestate\":3}}");
+        }
+    }
+
+    private static class HueConfig {
+        private HueSWUpdate swupdate;
+
+        public HueSWUpdate getSWUpdate() {
+            return swupdate;
+        }
+    }
+
+    private static class HueSWUpdate {
+        private String text;
+        private int updatestate;
+        private boolean notify;
+
+        public String getText() {
+            return text;
+        }
+
+        public int getUpdatestate() {
+            return updatestate;
+        }
+
+        public boolean isNotify() {
+            return notify;
+        }
     }
 }
