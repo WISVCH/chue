@@ -2,7 +2,6 @@ package ch.wisv.chue;
 
 import ch.wisv.chue.events.EventNotExecutedException;
 import ch.wisv.chue.events.HueEvent;
-import ch.wisv.chue.hue.BridgeUnavailableException;
 import ch.wisv.chue.hue.HueFacade;
 import ch.wisv.chue.hue.HueLamp;
 import ch.wisv.chue.states.BlankState;
@@ -82,20 +81,6 @@ public class HueService {
                 new BlankState().execute(hueFacade, lamps);
         };
         new Thread(restore, "ServiceThread").start();
-    }
-
-    /**
-     * Strobe the provided lamps for the specified time
-     *
-     * @param millis duration in milliseconds
-     * @param lamps the lamps to strobe
-     */
-    public void strobe(int millis, Set<HueLamp> lamps) {
-        try {
-            hueFacade.strobe(millis, lamps);
-        } catch (BridgeUnavailableException e) {
-            throw new EventNotExecutedException(e);
-        }
     }
 
     /**

@@ -5,11 +5,9 @@ import com.philips.lighting.hue.sdk.PHHueSDK;
 import com.philips.lighting.hue.sdk.PHMessageType;
 import com.philips.lighting.hue.sdk.PHSDKListener;
 import com.philips.lighting.hue.sdk.bridge.impl.PHBridgeImpl;
-import com.philips.lighting.hue.sdk.connection.impl.PHHueHttpConnection;
 import com.philips.lighting.hue.sdk.connection.impl.PHLocalBridgeDelegator;
 import com.philips.lighting.hue.sdk.utilities.PHUtilities;
 import com.philips.lighting.model.*;
-import org.json.hue.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +15,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class PhilipsHueFacade implements HueFacade {
 
@@ -139,41 +140,6 @@ public class PhilipsHueFacade implements HueFacade {
             }
         }
     };
-
-    @Override
-    public void strobe(int millis, Set<HueLamp> lamps) throws BridgeUnavailableException {
-        if (!isBridgeAvailable()) {
-            log.warn("Strobe failed: bridge not available!");
-            throw new BridgeUnavailableException();
-        }
-
-        PHHueHttpConnection connection = new PHHueHttpConnection();
-        final String httpAddress = buildBridgeHttpAddress();
-
-        // Put a light definition aka `symbol` at bulb, using internal API call
-        for (HueLamp lamp : lamps) {
-            JSONObject pointSymbol = new JSONObject();
-            pointSymbol.put("1", "0A00F1F01F1F1001F1FF100000000001F2F");
-            String resp = connection.putData(pointSymbol.toString(),
-                    httpAddress + "lights/" + lamp.getId() + "/pointsymbol");
-            log.debug(resp);
-        }
-
-        boolean allLightsTurnedOn = bridge.getResourceCache().getAllLights().stream()
-                .allMatch(light -> light.getLastKnownLightState().isOn());
-
-        if (allLightsTurnedOn) {
-            // Activate symbol
-            // Kinda magic symbolselection. It is something like this:
-            // for 01..05 step 01, [0i0x]+ where i is `symbol` and x is light bulb
-            JSONObject strobeJSON = new JSONObject();
-            strobeJSON.put("symbolselection", "01010301010102010301");
-            strobeJSON.put("duration", millis);
-            //group 0 contains all lights
-            String resp = connection.putData(strobeJSON.toString(), httpAddress + "groups/0/transmitsymbol");
-            log.debug(resp);
-        }
-    }
 
     private String buildBridgeHttpAddress() {
         return ((PHLocalBridgeDelegator) ((PHBridgeImpl) bridge).getBridgeDelegator())
