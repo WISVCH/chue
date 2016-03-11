@@ -68,21 +68,6 @@ public class WebController {
         return sb.toString();
     }
 
-    @RequestMapping(value = "/strobe", method = RequestMethod.GET)
-    @ResponseBody
-    String strobeAll(@RequestParam(value = "duration", defaultValue = "500") Integer duration) {
-        hue.strobe(duration, hue.getLamps());
-        return "Strobe for duration=" + duration + "ms";
-    }
-
-    @RequestMapping(value = "/strobe", method = RequestMethod.POST)
-    @ResponseBody
-    String strobe(@RequestParam(value = "id[]") String[] id, @RequestParam(value = "duration", defaultValue = "500")
-    Integer duration) {
-        hue.strobe(duration, hue.getLampsById(Arrays.asList(id)));
-        return "Strobe lamps (" + Arrays.asList(id) + ") for duration=" + duration + "ms";
-    }
-
     @RequestMapping("/colorloop")
     @ResponseBody
     String colorLoop() {
