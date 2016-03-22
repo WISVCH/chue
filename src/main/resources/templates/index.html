@@ -49,12 +49,15 @@
         <p>
             <select multiple="multiple" id="selected_light_ids">
                 <option th:each="light : ${lights}"
-                        th:value="${light.id}"
-                        th:text="${light.name}"
-                        style="background: ">Light Name</option>
+                        th:id="'selected_light_' + ${light.key.id}"
+                        th:value="${light.key.id}"
+                        th:text="${light.key.name}"
+                        th:style="'background-color: ' + ${light.value}"
+                        data-color="#D3D3D3">Light Name
+                </option>
             </select>
 
-           <input id="selected_light_color" type="color" name="hex" value="#eeeeee" />
+            <input id="selected_light_color" type="color" name="hex" value="#D3D3D3"/>
         </p>
     </div>
     <div>
@@ -120,15 +123,24 @@
     var waiting = false;
 
     $("#selected_light_color").on("input", function(event) {
-         $.ajax({
-            type: "POST",
-            url: '/color',
-            data: {
-                "hex": event.currentTarget.value,
-                "id": $("#selected_light_ids").val()
-            }
-          });
+        var id = $("#selected_light_ids").val();
+        var hex = event.currentTarget.value;
+
+        $.post('color',
+                {"hex": hex, "id": id},
+                function () {
+                    id.forEach(function (value) {
+                        var option = $("#selected_light_" + value);
+                        option.css('background-color', hex);
+                        option.data('color', hex);
+                    });
+                }
+        );
     });
+
+    $("#selected_light_ids").find("option").click(function () {
+        $("#selected_light_color").val($(this).data('color'));
+    })
 </script>
 </body>
 </html>
