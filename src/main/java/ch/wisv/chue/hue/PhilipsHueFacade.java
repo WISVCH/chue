@@ -165,7 +165,7 @@ public class PhilipsHueFacade implements HueFacade {
         PHLightState phLightState = new PHLightState();
 
         if (lightState.getTransitionTime().isPresent()) {
-            phLightState.setTransitionTime(lightState.getTransitionTime().getAsInt());
+            phLightState.setTransitionTime(lightState.getTransitionTime().get());
         }
 
         if (lightState.getAlertMode().isPresent()) {

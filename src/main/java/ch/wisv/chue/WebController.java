@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Spring MVC Web Controller
@@ -40,7 +42,17 @@ public class WebController {
 
     @RequestMapping("/")
     String index(Model model) {
-        model.addAttribute("lights", hue.getLamps());
+        model.addAttribute("lights",
+                new TreeMap<>(hue.getLamps().stream()
+                        .collect(Collectors.toMap(
+                                l -> l,
+                                l -> colorToString(
+                                        l.getLastState().isPresent()
+                                                ? l.getLastState().get().getColor().orElse(Color.LIGHTGRAY)
+                                                : Color.LIGHTGRAY
+                                )
+                        )))
+        );
         return "index";
     }
 
@@ -203,14 +215,21 @@ public class WebController {
             return "undefined lamp or colour";
         }
 
-        Color c = lamp.getLastState().get().getColor().get();
-
-        return String.format("lamp %s is now #%02x%02x%02x",
+        return String.format("lamp %s is now %s",
                 lamp.getId(),
+                colorToString(lamp.getLastState().get().getColor().get()));
+    }
+
+    /**
+     * Convert a Java FX Color to a hexadecimal representation as String
+     *
+     * @param c the color
+     * @return the hex value of the color
+     */
+    private static String colorToString(Color c) {
+        return String.format("#%02x%02x%02x",
                 (int) Math.round(c.getRed() * 255.0),
                 (int) Math.round(c.getGreen() * 255.0),
                 (int) Math.round(c.getBlue() * 255.0));
     }
-
-
 }

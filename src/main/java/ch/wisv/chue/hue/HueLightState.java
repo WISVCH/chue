@@ -3,44 +3,43 @@ package ch.wisv.chue.hue;
 import javafx.scene.paint.Color;
 
 import java.util.Optional;
-import java.util.OptionalInt;
 
 public class HueLightState {
-    private Optional<AlertMode> alertMode = Optional.empty();
-    private Optional<EffectMode> effectMode = Optional.empty();
-    private OptionalInt transitionTime = OptionalInt.empty();
-    private Optional<Color> color = Optional.empty();
+    private AlertMode alertMode;
+    private EffectMode effectMode;
+    private Integer transitionTime;
+    private Color color;
 
     public Optional<AlertMode> getAlertMode() {
-        return alertMode;
+        return Optional.ofNullable(alertMode);
     }
 
     public void setAlertMode(AlertMode alertMode) {
-        this.alertMode = Optional.of(alertMode);
+        this.alertMode = alertMode;
     }
 
     public Optional<EffectMode> getEffectMode() {
-        return effectMode;
+        return Optional.ofNullable(effectMode);
     }
 
     public void setEffectMode(EffectMode effectMode) {
-        this.effectMode = Optional.of(effectMode);
+        this.effectMode = effectMode;
     }
 
-    public OptionalInt getTransitionTime() {
-        return transitionTime;
+    public Optional<Integer> getTransitionTime() {
+        return Optional.ofNullable(transitionTime);
     }
 
     public void setTransitionTime(int transitionTime) {
-        this.transitionTime = OptionalInt.of(transitionTime);
+        this.transitionTime = transitionTime;
     }
 
     public Optional<Color> getColor() {
-        return color;
+        return Optional.ofNullable(color);
     }
 
     public void setColor(Color color) {
-        this.color = Optional.of(color);
+        this.color = color;
     }
 
     public enum AlertMode {
