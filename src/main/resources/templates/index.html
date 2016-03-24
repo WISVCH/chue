@@ -53,7 +53,7 @@
                         th:value="${light.key.id}"
                         th:text="${light.key.name}"
                         th:style="'background-color: ' + ${light.value}"
-                        data-color="#D3D3D3">Light Name
+                        th:attr="data-color=${light.value}">Light Name
                 </option>
             </select>
 
@@ -120,8 +120,6 @@
     <div th:replace="fragments/footer :: footer">&copy; 2014 The Static Templates</div>
 </div>
 <script type="text/javascript">
-    var waiting = false;
-
     $("#selected_light_color").on("input", function(event) {
         var id = $("#selected_light_ids").val();
         var hex = event.currentTarget.value;
@@ -140,7 +138,7 @@
 
     $("#selected_light_ids").find("option").click(function () {
         $("#selected_light_color").val($(this).data('color'));
-    })
+    });
 </script>
 </body>
 </html>
