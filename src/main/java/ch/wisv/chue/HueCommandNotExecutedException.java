@@ -1,8 +1,8 @@
 package ch.wisv.chue;
 
 public class HueCommandNotExecutedException extends RuntimeException {
-    public HueCommandNotExecutedException(String message) {
-        super(message);
+    public HueCommandNotExecutedException() {
+        super("Hue bridge is not available");
     }
 
     public HueCommandNotExecutedException(Throwable cause) {
