@@ -3,6 +3,7 @@ package ch.wisv.chue;
 import ch.wisv.chue.events.Alert;
 import ch.wisv.chue.events.EventNotExecutedException;
 import ch.wisv.chue.hue.HueLamp;
+import ch.wisv.chue.hue.HueLightState;
 import ch.wisv.chue.states.*;
 import javafx.scene.paint.Color;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -46,11 +44,14 @@ public class WebController {
                 new TreeMap<>(hue.getLamps().stream()
                         .collect(Collectors.toMap(
                                 l -> l,
-                                l -> colorToString(
-                                        l.getLastState().isPresent()
-                                                ? l.getLastState().get().getColor().orElse(Color.LIGHTGRAY)
-                                                : Color.LIGHTGRAY
-                                )
+                                l -> {
+                                    Optional<HueLightState> lastState = l.getLastState();
+                                    return colorToString(
+                                            lastState.isPresent()
+                                                    ? lastState.get().getColor().orElse(Color.LIGHTGRAY)
+                                                    : Color.LIGHTGRAY
+                                    );
+                                }
                         )))
         );
         return "index";
@@ -211,13 +212,21 @@ public class WebController {
      * @return pretty String with identifier and hex value of the color of the lamp
      */
     private static String getPrettyColor(HueLamp lamp) {
-        if (lamp == null || !lamp.getLastState().isPresent() || !lamp.getLastState().get().getColor().isPresent()) {
-            return "undefined lamp or colour";
+        if (lamp == null) {
+            return "undefined lamp";
         }
 
-        return String.format("lamp %s is now %s",
-                lamp.getId(),
-                colorToString(lamp.getLastState().get().getColor().get()));
+        Optional<HueLightState> lastState = lamp.getLastState();
+        if (!lastState.isPresent()) {
+            return "undefined state";
+        }
+
+        Optional<Color> color = lastState.get().getColor();
+        if (!color.isPresent()) {
+            return "undefined color";
+        }
+
+        return String.format("lamp %s is now %s", lamp.getId(), colorToString(color.get()));
     }
 
     /**

@@ -26,11 +26,7 @@ public class HueService {
     @Autowired
     private HueFacade hueFacade;
 
-    public interface Command {
-        void execute();
-    }
-
-    private Command restoreState;
+    private Runnable restoreState;
 
     /**
      * Load a state on the lamps
@@ -40,7 +36,7 @@ public class HueService {
      */
     public void loadState(HueState state, Set<HueLamp> lamps) {
         if (!hueFacade.isBridgeAvailable()) {
-            throw new StateNotLoadedException("Hue bridge is not available");
+            throw new StateNotLoadedException();
         }
 
         restoreState = () -> {
@@ -63,7 +59,7 @@ public class HueService {
      */
     public void loadEvent(HueEvent event, int duration, Set<HueLamp> lamps) {
         if (!hueFacade.isBridgeAvailable()) {
-            throw new EventNotExecutedException("Hue bridge is not available");
+            throw new EventNotExecutedException();
         }
 
         event.execute(hueFacade, lamps);
@@ -76,7 +72,7 @@ public class HueService {
             }
             log.debug("Restoring light states after event.");
             if (this.restoreState != null)
-                this.restoreState.execute();
+                this.restoreState.run();
             else
                 new BlankState().execute(hueFacade, lamps);
         };

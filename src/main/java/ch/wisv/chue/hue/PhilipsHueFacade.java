@@ -8,6 +8,7 @@ import com.philips.lighting.hue.sdk.bridge.impl.PHBridgeImpl;
 import com.philips.lighting.hue.sdk.connection.impl.PHLocalBridgeDelegator;
 import com.philips.lighting.hue.sdk.utilities.PHUtilities;
 import com.philips.lighting.model.*;
+import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,10 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 public class PhilipsHueFacade implements HueFacade {
 
@@ -164,12 +162,14 @@ public class PhilipsHueFacade implements HueFacade {
 
         PHLightState phLightState = new PHLightState();
 
-        if (lightState.getTransitionTime().isPresent()) {
-            phLightState.setTransitionTime(lightState.getTransitionTime().get());
+        Optional<Integer> transitionTime = lightState.getTransitionTime();
+        if (transitionTime.isPresent()) {
+            phLightState.setTransitionTime(transitionTime.get());
         }
 
-        if (lightState.getAlertMode().isPresent()) {
-            switch (lightState.getAlertMode().get()) {
+        Optional<HueLightState.AlertMode> alertMode = lightState.getAlertMode();
+        if (alertMode.isPresent()) {
+            switch (alertMode.get()) {
                 case NONE:
                     phLightState.setAlertMode(PHLight.PHLightAlertMode.ALERT_NONE);
                     break;
@@ -179,8 +179,9 @@ public class PhilipsHueFacade implements HueFacade {
             }
         }
 
-        if (lightState.getEffectMode().isPresent()) {
-            switch (lightState.getEffectMode().get()) {
+        Optional<HueLightState.EffectMode> effectMode = lightState.getEffectMode();
+        if (effectMode.isPresent()) {
+            switch (effectMode.get()) {
                 case NONE:
                     phLightState.setEffectMode(PHLight.PHLightEffectMode.EFFECT_NONE);
                     break;
@@ -190,11 +191,12 @@ public class PhilipsHueFacade implements HueFacade {
             }
         }
 
-        if (lightState.getColor().isPresent()) {
+        Optional<Color> color = lightState.getColor();
+        if (color.isPresent()) {
             float xy[] = PHUtilities.calculateXYFromRGB(
-                    (int) Math.round(lightState.getColor().get().getRed() * 255.0),
-                    (int) Math.round(lightState.getColor().get().getGreen() * 255.0),
-                    (int) Math.round(lightState.getColor().get().getBlue() * 255.0),
+                    (int) Math.round(color.get().getRed() * 255.0),
+                    (int) Math.round(color.get().getGreen() * 255.0),
+                    (int) Math.round(color.get().getBlue() * 255.0),
                     "LCT001");
             phLightState.setX(xy[0]);
             phLightState.setY(xy[1]);
