@@ -17,7 +17,8 @@ apply plugin: 'spring-boot'
 
 jar {
     baseName = 'chue'
-    version =  '0.2.54'
+    version = '0.2.54'
+    archiveName = "${baseName}.${extension}"
 }
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
