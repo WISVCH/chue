@@ -17,9 +17,22 @@ apply plugin: 'spring-boot'
 
 jar {
     baseName = 'chue'
-    version = '0.2.54'
+    if (project.hasProperty('buildNumber')) {
+        version = "${buildNumber}"
+    } else {
+        version = 'SNAPSHOT'
+    }
     archiveName = "${baseName}.${extension}"
+    manifest {
+        attributes("Implementation-Title": "CHue",
+                "Implementation-Version": version)
+    }
 }
+
+springBoot {
+    executable = true
+}
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
