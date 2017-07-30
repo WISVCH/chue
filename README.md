@@ -8,6 +8,4 @@ Create new endpoints in `Webcontroller` by implementing either `HueState` or `Hu
 
 ## Production
 
-TeamCity deploys the master branch to https://gadgetlab.chnet/chue/.
-
-Log files can be viewed using `ssh gadgetlab.chnet sudo journalctl -u chue.service`.
+The `master` branch is automatically deployed to https://chue.k8s.chnet.
