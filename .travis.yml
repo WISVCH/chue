@@ -1,6 +1,18 @@
+dist: trusty
+sudo: required
+services:
+- docker
 language: java
 jdk:
 - oraclejdk8
+script:
+- "./gradlew clean build -PbuildNumber=$TRAVIS_BUILD_NUMBER"
+- docker build --no-cache --pull -t wisvch/chue:$TRAVIS_BUILD_NUMBER .
+after_success:
+- if [ "$TRAVIS_BRANCH" == "master" ]; then
+  docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  docker push wisvch/chue:$TRAVIS_BUILD_NUMBER;
+  fi
 notifications:
   slack:
     secure: iqb9Dq06pGIHNrg3PbZ0QF4RWzs010kNfkv7OX+n0G4uBSs3wqkyXwmHnVL7yh5rC2GmH1S8ab/JE7mdkx9VWT9fqFuhJiaWF3DBKl8CiV+9mD+/VynlzU+DIg/o5An9MO9O18dy53Lt1Xuy8a7siCG1CkgroCtMWZh+n2agZqw=
