@@ -9,7 +9,7 @@ script:
 - "./gradlew clean build -PbuildNumber=$TRAVIS_BUILD_NUMBER"
 - docker build --no-cache --pull -t wisvch/chue:$TRAVIS_BUILD_NUMBER .
 after_success:
-- if [ "$TRAVIS_BRANCH" == "master" ]; then
+- if [ "${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}" == "master" ]; then
   docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
   docker push wisvch/chue:$TRAVIS_BUILD_NUMBER;
   fi
