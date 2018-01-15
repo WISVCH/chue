@@ -120,6 +120,7 @@ public class PhilipsHueFacade implements HueFacade {
         public void onError(int code, final String message) {
             if (code == PHHueError.BRIDGE_NOT_RESPONDING) {
                 log.error("Not responding");
+                System.exit(1);
             } else if (code == PHMessageType.PUSHLINK_BUTTON_NOT_PRESSED) {
                 log.error("Pushlink button not pressed");
             } else if (code == PHMessageType.PUSHLINK_AUTHENTICATION_FAILED) {
