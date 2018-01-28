@@ -2,12 +2,8 @@ dist: trusty
 sudo: required
 services:
 - docker
-language: java
-jdk:
-- oraclejdk8
 script:
-- "./gradlew clean build -PbuildNumber=$TRAVIS_BUILD_NUMBER"
-- docker build --no-cache --pull -t wisvch/chue:$TRAVIS_BUILD_NUMBER .
+- docker build --no-cache --pull --build-arg BUILD_NUMBER=$TRAVIS_BUILD_NUMBER -t wisvch/chue:$TRAVIS_BUILD_NUMBER .
 after_success:
 - if [ "${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}" == "master" ]; then
   docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
