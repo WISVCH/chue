@@ -1,2 +1,3 @@
-**
-!build/libs/chue.jar
+build
+.idea
+.gradle

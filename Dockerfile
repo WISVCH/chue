@@ -1,8 +1,15 @@
-# CHue depends on JavaFX, so we cannot depend on wisvch/alpine-java
-FROM wisvch/debian:stretch
+FROM wisvch/openjdk:8-jdk AS builder
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends openjdk-8-jre openjfx && \
+    apt-get install -y --no-install-recommends openjfx
+COPY . /src
+WORKDIR /src
+ARG BUILD_NUMBER
+RUN ./gradlew build -PbuildNumber=$BUILD_NUMBER
+
+FROM wisvch/spring-boot-base:1
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends openjfx && \
     rm -rf /var/lib/apt/lists/*
-ADD build/libs/chue.jar /srv/chue.jar
-WORKDIR /srv
-CMD "/srv/chue.jar"
+COPY --from=builder /src/build/libs/chue.jar /srv/chue.jar
+USER spring-boot
+CMD ["/srv/chue.jar"]
